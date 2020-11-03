@@ -5,11 +5,27 @@ cs-custom-bouncer will fetch new and old decisions from a CrowdSec API and then 
 
 ## Installation
 
+
+### Assisted
+
 First, download the latest [`cs-custom-bouncer` release](https://github.com/crowdsecurity/cs-custom-bouncer/releases).
 
 ```sh
 $ tar xzvf cs-custom-bouncer.tgz
 $ sudo ./install.sh
+```
+
+### From source
+
+Run the following commands:
+
+```bash
+git clone https://github.com/crowdsecurity/cs-custom-bouncer.git
+cd cs-custom-bouncer/
+make release
+tar xzvf cs-custom-bouncer.tgz
+cd cs-custom-bouncer-v*/
+sudo ./install.sh
 ```
 
 ## Configuration
