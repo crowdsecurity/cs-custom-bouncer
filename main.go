@@ -11,13 +11,13 @@ import (
 	"github.com/coreos/go-systemd/daemon"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/crowdsecurity/cs-custom-bouncer/pkg/version"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
 	"gopkg.in/tomb.v2"
 )
 
 const (
-	version = "v0.0.1"
-	name    = "cs-custom-bouncer"
+	name = "cs-custom-bouncer"
 )
 
 var t tomb.Tomb
@@ -56,7 +56,7 @@ func HandleSignals(custom *customBouncer) {
 
 func main() {
 	var err error
-
+	log.Infof("cs-custom-bouncer %s", version.VersionStr())
 	configPath := flag.String("c", "", "path to cs-custom-bouncer.yaml")
 	verbose := flag.Bool("v", false, "set verbose mode")
 
@@ -88,7 +88,7 @@ func main() {
 		APIKey:         config.APIKey,
 		APIUrl:         config.APIUrl,
 		TickerInterval: config.UpdateFrequency,
-		UserAgent:      fmt.Sprintf("%s/%s", name, version),
+		UserAgent:      fmt.Sprintf("%s/%s", name, version.VersionStr()),
 	}
 	if err := bouncer.Init(); err != nil {
 		log.Fatalf(err.Error())

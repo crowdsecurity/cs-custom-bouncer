@@ -1,5 +1,4 @@
 # Go parameters
-BUILD_VERSION?="$(shell git for-each-ref --sort=-v:refname --count=1 --format '%(refname)'  | cut -d '/' -f3)"
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
@@ -11,16 +10,29 @@ PREFIX?="/"
 PID_DIR = $(PREFIX)"/var/run/"
 BINARY_NAME=cs-custom-bouncer
 
+
+#Current versioning information from env
+BUILD_VERSION?="$(shell git describe --tags `git rev-list --tags --max-count=1`)"
+BUILD_GOVERSION="$(shell go version | cut -d " " -f3 | sed -r 's/[go]+//g')"
+BUILD_CODENAME=$(shell cat RELEASE.json | jq -r .CodeName)
+BUILD_TIMESTAMP=$(shell date +%F"_"%T)
+BUILD_TAG="$(shell git rev-parse HEAD)"
+export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Version=$(BUILD_VERSION) \
+-X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.BuildDate=$(BUILD_TIMESTAMP) \
+-X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Codename=$(BUILD_CODENAME)  \
+-X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Tag=$(BUILD_TAG) \
+-X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.GoVersion=$(BUILD_GOVERSION)"
+
 RELDIR = "cs-custom-bouncer-${BUILD_VERSION}"
 
 
 all: clean test build
 
 static: clean
-	$(GOBUILD) -o $(BINARY_NAME) -v -a -tags netgo -ldflags '-w -extldflags "-static"'
+	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v -a -tags netgo -ldflags '-w -extldflags "-static"'
 
 build: clean
-	$(GOBUILD) -o $(BINARY_NAME) -v
+	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v
 
 test:
 	@$(GOTEST) -v ./...
