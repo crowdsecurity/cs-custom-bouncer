@@ -53,7 +53,7 @@ custom_binary.sh del 1.2.3.4/32 3600 "test blacklist"
 
 ## Configuration
 
-> If you are running your bouncer on the same machine than your crowdsec local API, then you don't need to this since the `install.sh` took care of this.
+> If you are running your bouncer on the same machine that your crowdsec local API, then you don't need to this since the `install.sh` took care of this.
 
 Before starting the `cs-custom-bouncer` service, please edit the configuration to add your API url and key.
 The default configuration file is located under : `/etc/crowdsec/cs-custom-bouncer/`
