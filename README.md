@@ -42,7 +42,7 @@ The custom binary must support the following commands:
 - `reason` : reason of the decision
 - `json_object`: the serialized decision
 
-:warning: don't forget to add `execution` right to your binary/script
+:warning: don't forget to add right execution to your binary/script
 
 ### Examples:
 
@@ -61,7 +61,7 @@ $ vim /etc/crowdsec/custom-bouncer/cs-custom-bouncer.yaml
 ```
 
 ```yaml
-bin_path: <path_to_binary>
+bin_path: <absolute_path_to_binary>
 piddir: /var/run/
 update_frequency: 10s
 daemonize: true
