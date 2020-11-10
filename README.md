@@ -34,13 +34,13 @@ The custom binary must support the following commands:
 
 ```bash
 <my_custom_binary> add <ip> <duration> <reason> <optional_parameter> # to add an IP address
-<my_custom_binary> del <ip> <duration> <reason> <optional_parameter> # to add an IP address
+<my_custom_binary> del <ip> <duration> <reason> <optional_parameter> # to del an IP address
 ```
 
 - `ip` : ip address to block (`1.2.3.4` for an IP, `1.2.3.0/24` for a range)
 - `duration`: duration of the remediation in seconds
 - `reason` : reason of the decision
-- `optional_parameter`: the serialized decisions
+- `optional_parameter`: the serialized decision
 
 ### Examples:
 
@@ -48,8 +48,6 @@ The custom binary must support the following commands:
 custom_binary.sh add 1.2.3.4 3600 "test blacklist"
 custom_binary.sh del 1.2.3.4 3600 "test blacklist"
 ```
-
-
 
 ## Configuration
 
