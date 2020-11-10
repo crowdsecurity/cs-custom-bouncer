@@ -4,12 +4,20 @@ BIN_PATH="./cs-custom-bouncer"
 CONFIG_DIR="/etc/crowdsec/cs-custom-bouncer/"
 PID_DIR="/var/run/crowdsec/"
 SYSTEMD_PATH_FILE="/etc/systemd/system/cs-custom-bouncer.service"
-
+API_KEY=""
+BINARY_PATH=""
 
 gen_apikey() {
     SUFFIX=`tr -dc A-Za-z0-9 </dev/urandom | head -c 8`
-    API_KEY=`cscli bouncers add -n cs-custom-bouncer-${SUFFIX} -o raw`
-    API_KEY=${API_KEY} envsubst < ./config/cs-custom-bouncer.yaml > "${CONFIG_DIR}cs-custom-bouncer.yaml"
+    API_KEY=`cscli bouncers add cs-custom-bouncer-${SUFFIX} -o raw`
+}
+
+gen_binary_path() {
+    echo "Absolute path to your custom binary:"
+    read BINARY_PATH
+    if [[ ${answer} == "" ]]; then
+            return
+    fi
 }
 
 install_custom_bouncer() {
@@ -20,8 +28,14 @@ install_custom_bouncer() {
 	systemctl daemon-reload
 }
 
+gen_config_file() {
+    API_KEY=${API_KEY} BINARY_PATH=${BINARY_PATH} envsubst < ./config/cs-custom-bouncer.yaml > "${CONFIG_DIR}cs-custom-bouncer.yaml"
+}
+
 
 echo "Installing cs-custom-bouncer"
 install_custom_bouncer
 gen_apikey
+gen_binary_path
+gen_config_file
 echo "cs-custom-bouncer service has been installed!"
