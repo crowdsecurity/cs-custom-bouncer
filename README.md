@@ -30,7 +30,7 @@ sudo ./install.sh
 
 ### Start
 
-If you are running your bouncer on the same machine that your crowdsec local API, you can start the service directly since the `install.sh` took care of the configuration.
+If your bouncer run on the same machine that your crowdsec local API, you can start the service directly since the `install.sh` took care of the configuration.
 ```sh
 sudo systemctl start cs-custom-bouncer
 ```
