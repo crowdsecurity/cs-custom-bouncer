@@ -1,12 +1,11 @@
 # cs-custom-bouncer
 Crowdsec bouncer written in golang for custom scripts.
 
-cs-custom-bouncer will fetch new and old decisions from a CrowdSec API and then will be given as an argument to a custom binary.
+cs-custom-bouncer will periodically fetch new and expired/removed decisions from CrowdSec Local API and will pass them as arguments to a custom user script.
 
 ## Installation
 
-
-### Assisted
+### With installer
 
 First, download the latest [`cs-custom-bouncer` release](https://github.com/crowdsecurity/cs-custom-bouncer/releases).
 
@@ -30,14 +29,14 @@ sudo ./install.sh
 
 ### Start
 
-If your bouncer run on the same machine that your crowdsec local API, you can start the service directly since the `install.sh` took care of the configuration.
+If your bouncer run on the same machine as your crowdsec local API, you can start the service directly since the `install.sh` took care of the configuration.
 ```sh
 sudo systemctl start cs-custom-bouncer
 ```
 
 ## Usage
 
-The custom binary must support the following commands:
+The custom binary will be called with the following arguments :
 
 ```bash
 <my_custom_binary> add <ip> <duration> <reason> <json_object> # to add an IP address
@@ -49,7 +48,7 @@ The custom binary must support the following commands:
 - `reason` : reason of the decision
 - `json_object`: the serialized decision
 
-:warning: don't forget to add right execution to your binary/script
+:warning: don't forget to add execution permissions to your binary/script
 
 ### Examples:
 
