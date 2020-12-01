@@ -43,5 +43,5 @@ gen_apikey
 gen_binary_path
 gen_config_file
 systemctl enable cs-firewall-bouncer.service
+systemctl start cs-firewall-bouncer.service
 echo "cs-custom-bouncer service has been installed!"
-echo "Please set your binary path in ${CONFIG_DIR}cs-custom-bouncer.yaml and run 'sudo systemctl start cs-custom-bouncer' to start the service"
