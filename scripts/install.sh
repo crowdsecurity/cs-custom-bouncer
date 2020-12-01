@@ -33,9 +33,15 @@ gen_config_file() {
 }
 
 
+if ! [ $(id -u) = 0 ]; then
+    log_err "Please run the install script as root or with sudo"
+    exit 1
+fi
 echo "Installing cs-custom-bouncer"
 install_custom_bouncer
 gen_apikey
 gen_binary_path
 gen_config_file
+systemctl enable cs-firewall-bouncer.service
 echo "cs-custom-bouncer service has been installed!"
+echo "Please set your binary path in ${CONFIG_DIR}cs-custom-bouncer.yaml and run 'sudo systemctl start cs-custom-bouncer' to start the service"
