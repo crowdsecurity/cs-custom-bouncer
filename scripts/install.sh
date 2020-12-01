@@ -42,6 +42,11 @@ install_custom_bouncer
 gen_apikey
 gen_binary_path
 gen_config_file
-systemctl enable cs-firewall-bouncer.service
-systemctl start cs-firewall-bouncer.service
+systemctl enable cs-custom-bouncer.service
+if ! [ -f "$BINARY_PATH" ]; then
+    echo "$BINARY_PATH doesn't exist, can't start cs-custom-bouncer service."
+    echo "Please edit ${CONFIG_DIR}cs-custom-bouncer.yaml with a real binary path and run 'sudo systemctl start cs-custom-bouncer'."
+    exit 1
+fi
+systemctl start cs-custom-bouncer.service
 echo "cs-custom-bouncer service has been installed!"
