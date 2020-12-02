@@ -48,6 +48,18 @@ If your bouncer run on the same machine as your crowdsec local API, you can star
 sudo systemctl start cs-custom-bouncer
 ```
 
+## Upgrade
+
+## Upgrade
+
+If you already have installed `cs-custom-bouncer`, please download the [latest release](https://github.com/crowdsecurity/cs-custom-bouncer/releases) and run the following commands:
+
+```bash
+tar xzvf cs-custom-bouncer.tgz
+cd cs-custom-bouncer-v*/
+sudo ./upgrade.sh
+```
+
 ## Usage
 
 The custom binary will be called with the following arguments :
