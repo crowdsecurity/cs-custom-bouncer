@@ -52,7 +52,7 @@ sudo systemctl start cs-custom-bouncer
 
 ## Upgrade
 
-If you already have installed `cs-custom-bouncer`, please download the [latest release](https://github.com/crowdsecurity/cs-custom-bouncer/releases) and run the following commands:
+If you already have `cs-custom-bouncer` installed, please download the [latest release](https://github.com/crowdsecurity/cs-custom-bouncer/releases) and run the following commands to upgrade it:
 
 ```bash
 tar xzvf cs-custom-bouncer.tgz
