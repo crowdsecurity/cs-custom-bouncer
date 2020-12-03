@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/coreos/go-systemd/daemon"
@@ -107,9 +106,7 @@ func main() {
 				log.Infof("deleting '%d' decisions", len(decisions.Deleted))
 				for _, decision := range decisions.Deleted {
 					if err := custom.Delete(decision); err != nil {
-						if !strings.Contains(err.Error(), "netlink receive: no such file or directory") {
-							log.Errorf("unable to delete decision for '%s': %s", *decision.Value, err)
-						}
+						log.Errorf("unable to delete decision for '%s': %s", *decision.Value, err)
 					} else {
 						log.Debugf("deleted '%s'", *decision.Value)
 					}

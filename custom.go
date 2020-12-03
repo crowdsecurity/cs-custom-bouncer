@@ -54,6 +54,7 @@ func (c *customBouncer) Delete(decision *models.Decision) error {
 	if err != nil {
 		log.Warningf("serialize: %s", err)
 	}
+	log.Printf("custom [%s] : del ban on %s for %s sec (%s)", c.path, *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario)
 	cmd := exec.Command(c.path, "del", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		log.Infof("Error in 'del' command (%s): %v --> %s", cmd.String(), err, string(out))
