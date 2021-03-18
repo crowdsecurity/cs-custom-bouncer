@@ -7,6 +7,40 @@ SYSTEMD_PATH_FILE="/etc/systemd/system/cs-custom-bouncer.service"
 API_KEY=""
 BINARY_PATH=""
 
+usage() {
+      echo "Usage: ./install.sh [options]"
+      echo "    -h|--help                              Display this help message."
+      echo "    -b|--binary <path>                     Specify the binary path"
+
+      exit 0
+}
+
+while [[ $# -gt 0 ]]
+do
+    key="${1}"
+    case ${key} in
+    -b|--binary)
+        if ! [ -f "${2}" ]; then
+            echo "${key} need a path"
+            usage
+            exit 1
+        fi
+        BINARY_PATH="$2"
+        shift # past argument
+        shift
+        ;;
+    -h|--help)
+        usage
+        exit 0
+        ;;
+    *)    # unknown option
+        echo "Unknown argument ${key}."
+        usage
+        exit 1
+        ;;
+    esac
+done
+
 gen_apikey() {
     which cscli > /dev/null
     if [[ $? == 0 ]]; then 
@@ -48,7 +82,9 @@ fi
 echo "Installing cs-custom-bouncer"
 install_custom_bouncer
 gen_apikey
-gen_binary_path
+if ! [ -f "$BINARY_PATH" ]; then
+    gen_binary_path
+fi
 gen_config_file
 systemctl enable cs-custom-bouncer.service
 if ! [ -f "$BINARY_PATH" ]; then
