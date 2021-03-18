@@ -8,8 +8,16 @@ API_KEY=""
 BINARY_PATH=""
 
 gen_apikey() {
-    SUFFIX=`tr -dc A-Za-z0-9 </dev/urandom | head -c 8`
-    API_KEY=`cscli bouncers add cs-custom-bouncer-${SUFFIX} -o raw`
+    which cscli > /dev/null
+    if [[ $? == 0 ]]; then 
+        echo "cscli found, generating bouncer api key."
+        SUFFIX=`tr -dc A-Za-z0-9 </dev/urandom | head -c 8`
+        API_KEY=`cscli bouncers add cs-custom-bouncer-${SUFFIX} -o raw`
+        READY="yes"
+    else 
+        echo "cscli not found, you will need to generate api key."
+        READY="no"
+    fi
 }
 
 gen_binary_path() {
@@ -34,7 +42,7 @@ gen_config_file() {
 
 
 if ! [ $(id -u) = 0 ]; then
-    log_err "Please run the install script as root or with sudo"
+    echo "Please run the install script as root or with sudo"
     exit 1
 fi
 echo "Installing cs-custom-bouncer"
@@ -48,5 +56,11 @@ if ! [ -f "$BINARY_PATH" ]; then
     echo "Please edit ${CONFIG_DIR}cs-custom-bouncer.yaml with a real binary path and run 'sudo systemctl start cs-custom-bouncer'."
     exit 1
 fi
-systemctl start cs-custom-bouncer.service
+
+if [ "$READY" = "yes" ]; then
+    systemctl start cs-custom-bouncer.service
+else
+    echo "service not started. You need to get an API key and configure it in ${CONFIG_DIR}cs-firewall-bouncer.yaml"
+fi
+
 echo "cs-custom-bouncer service has been installed!"
