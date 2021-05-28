@@ -60,7 +60,7 @@ fi
 if [ "$READY" = "yes" ]; then
     systemctl start cs-custom-bouncer.service
 else
-    echo "service not started. You need to get an API key and configure it in ${CONFIG_DIR}cs-firewall-bouncer.yaml"
+    echo "service not started. You need to get an API key and configure it in ${CONFIG_DIR}cs-custom-bouncer.yaml and then run systemctl start cs-custom-bouncer.service"
 fi
 
 echo "cs-custom-bouncer service has been installed!"
