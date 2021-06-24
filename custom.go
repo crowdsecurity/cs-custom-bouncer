@@ -30,6 +30,11 @@ func newCustomBouncer(path string) (*customBouncer, error) {
 }
 
 func (c *customBouncer) ResetCache() {
+	cachedDecisionCount := len(c.newDecisionValueSet) + len(c.expiredDecisionValueSet)
+	if cachedDecisionCount != 0 {
+		log.Debugf("resetting cache, clearing %d decisions", cachedDecisionCount)
+		// dont return here, because this could be used to intiate the sets
+	}
 	c.newDecisionValueSet = make(map[DecisionKey]struct{})
 	c.expiredDecisionValueSet = make(map[DecisionKey]struct{})
 }

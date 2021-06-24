@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/coreos/go-systemd/daemon"
 	log "github.com/sirupsen/logrus"
@@ -92,6 +93,7 @@ func main() {
 	if err := bouncer.Init(); err != nil {
 		log.Fatalf(err.Error())
 	}
+	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
 
 	go bouncer.Run()
 
@@ -120,6 +122,7 @@ func main() {
 						log.Debugf("Adding '%s' for '%s'", *decision.Value, *decision.Duration)
 					}
 				}
+			case <-cacheResetTicker.C:
 				custom.ResetCache()
 			}
 		}
