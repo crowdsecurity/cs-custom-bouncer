@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/crowdsecurity/crowdsec/pkg/types"
 	log "github.com/sirupsen/logrus"
@@ -13,15 +14,16 @@ import (
 )
 
 type bouncerConfig struct {
-	BinPath         string    `yaml:"bin_path"` // path to binary
-	PidDir          string    `yaml:"piddir"`
-	UpdateFrequency string    `yaml:"update_frequency"`
-	Daemon          bool      `yaml:"daemonize"`
-	LogMode         string    `yaml:"log_mode"`
-	LogDir          string    `yaml:"log_dir"`
-	LogLevel        log.Level `yaml:"log_level"`
-	APIUrl          string    `yaml:"api_url"`
-	APIKey          string    `yaml:"api_key"`
+	BinPath                string        `yaml:"bin_path"` // path to binary
+	PidDir                 string        `yaml:"piddir"`
+	UpdateFrequency        string        `yaml:"update_frequency"`
+	Daemon                 bool          `yaml:"daemonize"`
+	LogMode                string        `yaml:"log_mode"`
+	LogDir                 string        `yaml:"log_dir"`
+	LogLevel               log.Level     `yaml:"log_level"`
+	APIUrl                 string        `yaml:"api_url"`
+	APIKey                 string        `yaml:"api_key"`
+	CacheRetentionDuration time.Duration `yaml:"cache_retention_duration"`
 }
 
 func NewConfig(configPath string) (*bouncerConfig, error) {

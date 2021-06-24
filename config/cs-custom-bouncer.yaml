@@ -1,6 +1,7 @@
 bin_path: ${BINARY_PATH}
 piddir: /var/run/
 update_frequency: 10s
+cache_retention_duration: 10s
 daemonize: true
 log_mode: file
 log_dir: /var/log/
