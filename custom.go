@@ -12,8 +12,15 @@ import (
 	"github.com/crowdsecurity/crowdsec/pkg/models"
 )
 
+type DecisionKey struct {
+	Value string
+	Type  string
+}
+
 type customBouncer struct {
-	path string
+	path                    string
+	newDecisionValueSet     map[DecisionKey]struct{}
+	expiredDecisionValueSet map[DecisionKey]struct{}
 }
 
 func newCustomBouncer(path string) (*customBouncer, error) {
@@ -22,17 +29,25 @@ func newCustomBouncer(path string) (*customBouncer, error) {
 	}, nil
 }
 
+func (c *customBouncer) ResetCache() {
+	c.newDecisionValueSet = make(map[DecisionKey]struct{})
+	c.expiredDecisionValueSet = make(map[DecisionKey]struct{})
+}
+
 func (c *customBouncer) Init() error {
+	c.ResetCache()
 	return nil
 }
 
 func (c *customBouncer) Add(decision *models.Decision) error {
+	if _, exists := c.newDecisionValueSet[decisionToDecisionKey(decision)]; exists {
+		return nil
+	}
 	banDuration, err := time.ParseDuration(*decision.Duration)
 	if err != nil {
 		return err
 	}
 	log.Printf("custom [%s] : add ban on %s for %s sec (%s)", c.path, *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario)
-
 	str, err := serializeDecision(decision)
 	if err != nil {
 		log.Warningf("serialize: %s", err)
@@ -41,15 +56,18 @@ func (c *customBouncer) Add(decision *models.Decision) error {
 	if out, err := cmd.CombinedOutput(); err != nil {
 		log.Infof("Error in 'add' command (%s): %v --> %s", cmd.String(), err, string(out))
 	}
+	c.newDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 	return nil
 }
 
 func (c *customBouncer) Delete(decision *models.Decision) error {
+	if _, exists := c.expiredDecisionValueSet[decisionToDecisionKey(decision)]; exists {
+		return nil
+	}
 	banDuration, err := time.ParseDuration(*decision.Duration)
 	if err != nil {
 		return err
 	}
-
 	str, err := serializeDecision(decision)
 	if err != nil {
 		log.Warningf("serialize: %s", err)
@@ -59,6 +77,7 @@ func (c *customBouncer) Delete(decision *models.Decision) error {
 	if out, err := cmd.CombinedOutput(); err != nil {
 		log.Infof("Error in 'del' command (%s): %v --> %s", cmd.String(), err, string(out))
 	}
+	c.expiredDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 	return nil
 }
 
@@ -72,4 +91,11 @@ func serializeDecision(decision *models.Decision) (string, error) {
 		return "", fmt.Errorf("serialize error : %s", err)
 	}
 	return string(serbyte), nil
+}
+
+func decisionToDecisionKey(decision *models.Decision) DecisionKey {
+	return DecisionKey{
+		Value: *decision.Value,
+		Type:  *decision.Type,
+	}
 }

@@ -120,6 +120,7 @@ func main() {
 						log.Debugf("Adding '%s' for '%s'", *decision.Value, *decision.Duration)
 					}
 				}
+				custom.ResetCache()
 			}
 		}
 	})
