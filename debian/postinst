@@ -10,7 +10,7 @@ if [ "$?" -eq "0" ] ; then
     START=1
     echo "cscli/crowdsec is present, generating API key"
     unique=`date +%s`
-    API_KEY=`cscli -oraw bouncers add FirewallBouncer-${unique}`
+    API_KEY=`cscli -oraw bouncers add CustomBouncer-${unique}`
     if [ $? -eq 1 ] ; then
         echo "failed to create API token, service won't be started."
         START=0
@@ -27,7 +27,7 @@ API_KEY=${API_KEY} envsubst < ${TMP} > /etc/crowdsec/crowdsec-custom-bouncer.yam
 rm ${TMP}
 
 if [ ${START} -eq 0 ] ; then
-    echo "no api key was generated, won't start service"
-else 
-    systemctl start crowdsec-custom-bouncer
+    echo "no api key was generated"
 fi
+
+echo "please enter the binary path in '/etc/crowdsec/crowdsec-custom-bouncer.yaml' and start the bouncer via 'systemctl start crowdsec-custom-bouncer' "
