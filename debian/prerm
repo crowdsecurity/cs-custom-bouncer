@@ -1,0 +1,2 @@
+systemctl stop crowdsec-custom-bouncer || echo "cannot stop service"
+systemctl disable crowdsec-custom-bouncer || echo "cannot disable service"

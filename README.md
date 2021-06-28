@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/crowdsecurity/cs-custom-bouncer/raw/main/docs/assets/crowdsec_custom_logo.png" alt="CrowdSec" title="CrowdSec" width="280" height="300" />
+<img src="https://github.com/crowdsecurity/crowdsec-custom-bouncer/raw/main/docs/assets/crowdsec_custom_logo.png" alt="CrowdSec" title="CrowdSec" width="280" height="300" />
 </p>
 <p align="center">
 <img src="https://img.shields.io/badge/build-pass-green">
@@ -12,19 +12,19 @@
 </p>
 
 
-# cs-custom-bouncer
+# crowdsec-custom-bouncer
 Crowdsec bouncer written in golang for custom scripts.
 
-cs-custom-bouncer will periodically fetch new and expired/removed decisions from CrowdSec Local API and will pass them as arguments to a custom user script.
+crowdsec-custom-bouncer will periodically fetch new and expired/removed decisions from CrowdSec Local API and will pass them as arguments to a custom user script.
 
 ## Installation
 
 ### With installer
 
-First, download the latest [`cs-custom-bouncer` release](https://github.com/crowdsecurity/cs-custom-bouncer/releases).
+First, download the latest [`crowdsec-custom-bouncer` release](https://github.com/crowdsecurity/crowdsec-custom-bouncer/releases).
 
 ```sh
-$ tar xzvf cs-custom-bouncer.tgz
+$ tar xzvf crowdsec-custom-bouncer.tgz
 $ sudo ./install.sh
 ```
 
@@ -33,11 +33,11 @@ $ sudo ./install.sh
 Run the following commands:
 
 ```bash
-git clone https://github.com/crowdsecurity/cs-custom-bouncer.git
-cd cs-custom-bouncer/
+git clone https://github.com/crowdsecurity/crowdsec-custom-bouncer.git
+cd crowdsec-custom-bouncer/
 make release
-tar xzvf cs-custom-bouncer.tgz
-cd cs-custom-bouncer-v*/
+tar xzvf crowdsec-custom-bouncer.tgz
+cd crowdsec-custom-bouncer-v*/
 sudo ./install.sh
 ```
 
@@ -45,16 +45,16 @@ sudo ./install.sh
 
 If your bouncer runs on the same machine as your crowdsec local API, you can start the service directly since the `install.sh` took care of the configuration.
 ```sh
-sudo systemctl start cs-custom-bouncer
+sudo systemctl start crowdsec-custom-bouncer
 ```
 
 ## Upgrade
 
-If you already have `cs-custom-bouncer` installed, please download the [latest release](https://github.com/crowdsecurity/cs-custom-bouncer/releases) and run the following commands to upgrade it:
+If you already have `crowdsec-custom-bouncer` installed, please download the [latest release](https://github.com/crowdsecurity/crowdsec-custom-bouncer/releases) and run the following commands to upgrade it:
 
 ```bash
-tar xzvf cs-custom-bouncer.tgz
-cd cs-custom-bouncer-v*/
+tar xzvf crowdsec-custom-bouncer.tgz
+cd crowdsec-custom-bouncer-v*/
 sudo ./upgrade.sh
 ```
 
@@ -83,11 +83,11 @@ custom_binary.sh del 1.2.3.4/32 3600 "test blacklist"
 
 ## Configuration
 
-Before starting the `cs-custom-bouncer` service, please edit the configuration to add your API url and key.
-The default configuration file is located under : `/etc/crowdsec/cs-custom-bouncer/`
+Before starting the `crowdsec-custom-bouncer` service, please edit the configuration to add your API url and key.
+The default configuration file is located under : `/etc/crowdsec/crowdsec-custom-bouncer/`
 
 ```sh
-$ vim /etc/crowdsec/custom-bouncer/cs-custom-bouncer.yaml
+$ vim /etc/crowdsec/custom-bouncer/crowdsec-custom-bouncer.yaml
 ```
 
 ```yaml
@@ -105,5 +105,5 @@ api_key: <API_KEY>  # Add your API key generated with `cscli bouncers add --name
 You can then start the service:
 
 ```sh
-sudo systemctl start cs-custom-bouncer
+sudo systemctl start crowdsec-custom-bouncer
 ```
