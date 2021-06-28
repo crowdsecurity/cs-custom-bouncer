@@ -27,6 +27,7 @@ do
         fi
         BINARY_PATH="$2"
         shift # past argument
+        BINARY_PATH=$(readlink -f $BINARY_PATH)
         shift
         ;;
     -h|--help)
