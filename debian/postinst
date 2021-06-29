@@ -22,12 +22,12 @@ fi
 
 
 TMP=`mktemp -p /tmp/`
-cp /etc/crowdsec/crowdsec-custom-bouncer.yaml ${TMP}
-API_KEY=${API_KEY} envsubst < ${TMP} > /etc/crowdsec/crowdsec-custom-bouncer.yaml
+cp /etc/crowdsec/crowdsec-custom-bouncer/crowdsec-custom-bouncer.yaml ${TMP}
+API_KEY=${API_KEY} envsubst < ${TMP} > /etc/crowdsec/crowdsec-custom-bouncer/crowdsec-custom-bouncer.yaml
 rm ${TMP}
 
 if [ ${START} -eq 0 ] ; then
     echo "no api key was generated"
 fi
 
-echo "please enter the binary path in '/etc/crowdsec/crowdsec-custom-bouncer.yaml' and start the bouncer via 'systemctl start crowdsec-custom-bouncer' "
+echo "please enter the binary path in '/etc/crowdsec/crowdsec-custom-bouncer/crowdsec-custom-bouncer.yaml' and start the bouncer via 'sudo systemctl start crowdsec-custom-bouncer' "

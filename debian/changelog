@@ -1,6 +1,5 @@
-crowdsec-custom-bouncer (1.0.12) UNRELEASED; urgency=medium
+crowdsec-custom-bouncer (1.0.0) UNRELEASED; urgency=medium
 
-  * debian package
-  * pf support
+  * Initial debian packaging
   
- -- Manuel Sabban <manuel@crowdsec.net>  Mon, 08 Feb 2021 09:38:06 +0100
+-- Shivam Sandbhor <shivam@crowdsec.net>  Mon Jun 28 10:52:32 2021 +0530
