@@ -1,10 +1,10 @@
 Source: crowdsec-custom-bouncer
 Maintainer: Crowdsec Team <debian@crowdsec.net>
-Build-Depends: debhelper, jq, bash
+Build-Depends: debhelper, bash
 
 Package: crowdsec-custom-bouncer
 Provides: crowdsec-custom-bouncer
-Description: Custom bouncer for Crowdsec (iptables+ipset, nftables or pf)
+Description: Custom bouncer for Crowdsec
 Architecture: any
 
 
