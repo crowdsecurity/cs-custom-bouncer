@@ -59,7 +59,7 @@ func NewConfig(configPath string) (*bouncerConfig, error) {
 			config.LogDir = "/var/log/"
 		}
 		LogOutput = &lumberjack.Logger{
-			Filename:   config.LogDir + "/cs-custom-bouncer.log",
+			Filename:   config.LogDir + "/crowdsec-custom-bouncer.log",
 			MaxSize:    500, //megabytes
 			MaxBackups: 3,
 			MaxAge:     28,   //days

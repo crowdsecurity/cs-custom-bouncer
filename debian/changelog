@@ -1,0 +1,5 @@
+crowdsec-custom-bouncer (1.0.0) UNRELEASED; urgency=medium
+
+  * Initial debian packaging
+  
+-- Shivam Sandbhor <shivam@crowdsec.net>  Mon Jun 28 10:52:32 2021 +0530

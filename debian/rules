@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+export DEB_VERSION=$(shell dpkg-parsechangelog | egrep '^Version:' | cut -f 2 -d ' ')
+export BUILD_VERSION=v${DEB_VERSION}-debian-pragmatic
+export GO111MODULE=on
+
+
+%:
+	dh $@
+
+override_dh_systemd_start:
+	echo "Not running dh_systemd_start"
+override_dh_auto_clean:
+override_dh_auto_test:
+override_dh_auto_build:
+override_dh_auto_install:
+	make
+	mkdir -p debian/crowdsec-custom-bouncer/usr/sbin
+	cp crowdsec-custom-bouncer  debian/crowdsec-custom-bouncer/usr/sbin
+	mkdir -p debian/crowdsec-custom-bouncer/etc/systemd/system/
+	mkdir -p debian/crowdsec-custom-bouncer/etc/crowdsec/crowdsec-custom-bouncer/
+	BIN=/sbin/crowdsec-custom-bouncer CFG=/etc/crowdsec/crowdsec-custom-bouncer envsubst < config/crowdsec-custom-bouncer.service >  debian/crowdsec-custom-bouncer/etc/systemd/system/crowdsec-custom-bouncer.service
+	cp config/crowdsec-custom-bouncer.yaml debian/crowdsec-custom-bouncer/etc/crowdsec/crowdsec-custom-bouncer/

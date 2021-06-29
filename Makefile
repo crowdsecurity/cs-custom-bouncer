@@ -8,7 +8,7 @@ GOGET=$(GOCMD) get
 
 PREFIX?="/"
 PID_DIR = $(PREFIX)"/var/run/"
-BINARY_NAME=cs-custom-bouncer
+BINARY_NAME=crowdsec-custom-bouncer
 
 
 #Current versioning information from env
@@ -16,12 +16,12 @@ BUILD_VERSION?="$(shell git describe --tags `git rev-list --tags --max-count=1`)
 BUILD_GOVERSION="$(shell go version | cut -d " " -f3 | sed -r 's/[go]+//g')"
 BUILD_TIMESTAMP=$(shell date +%F"_"%T)
 BUILD_TAG="$(shell git rev-parse HEAD)"
-export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Version=$(BUILD_VERSION) \
--X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.BuildDate=$(BUILD_TIMESTAMP) \
--X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Tag=$(BUILD_TAG) \
--X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.GoVersion=$(BUILD_GOVERSION)"
+export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/crowdsec-custom-bouncer/pkg/version.Version=$(BUILD_VERSION) \
+-X github.com/crowdsecurity/crowdsec-custom-bouncer/pkg/version.BuildDate=$(BUILD_TIMESTAMP) \
+-X github.com/crowdsecurity/crowdsec-custom-bouncer/pkg/version.Tag=$(BUILD_TAG) \
+-X github.com/crowdsecurity/crowdsec-custom-bouncer/pkg/version.GoVersion=$(BUILD_GOVERSION)"
 
-RELDIR = "cs-custom-bouncer-${BUILD_VERSION}"
+RELDIR = "crowdsec-custom-bouncer-${BUILD_VERSION}"
 
 
 all: clean test build
@@ -38,7 +38,7 @@ test:
 clean:
 	@rm -f $(BINARY_NAME)
 	@rm -rf ${RELDIR}
-	@rm -f cs-custom-bouncer.tgz || ""
+	@rm -f crowdsec-custom-bouncer.tgz || ""
 
 
 .PHONY: release
@@ -55,5 +55,5 @@ release: build
 	@chmod +x $(RELDIR)/install.sh
 	@chmod +x $(RELDIR)/uninstall.sh
 	@chmod +x $(RELDIR)/upgrade.sh
-	@tar cvzf cs-custom-bouncer.tgz $(RELDIR)
+	@tar cvzf crowdsec-custom-bouncer.tgz $(RELDIR)
 	
