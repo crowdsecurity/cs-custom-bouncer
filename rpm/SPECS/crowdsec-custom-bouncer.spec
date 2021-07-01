@@ -51,7 +51,6 @@ rm -rf %{buildroot}
 
 
 %post
-set -x
 systemctl daemon-reload
 
 
