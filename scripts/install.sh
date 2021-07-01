@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 BIN_PATH_INSTALLED="/usr/local/bin/crowdsec-custom-bouncer"
 BIN_PATH="./crowdsec-custom-bouncer"
-CONFIG_DIR="/etc/crowdsec/crowdsec-custom-bouncer/"
+CONFIG_DIR="/etc/crowdsec/bouncers/"
 PID_DIR="/var/run/crowdsec/"
 SYSTEMD_PATH_FILE="/etc/systemd/system/crowdsec-custom-bouncer.service"
 API_KEY=""
