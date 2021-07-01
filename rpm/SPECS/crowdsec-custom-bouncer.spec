@@ -47,7 +47,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /usr/bin/%{name}
 %{_unitdir}/%{name}.service
-%config /etc/crowdsec/%{name}/%{name}.yaml 
+%config(noreplace) /etc/crowdsec/%{name}/%{name}.yaml 
 
 
 %post
