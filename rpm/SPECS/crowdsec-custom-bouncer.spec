@@ -5,7 +5,7 @@ Summary:      Custom bouncer for Crowdsec
 
 License:        MIT
 URL:            https://crowdsec.net
-Source:         crowdsec-custom-bouncer-%(echo $VERSION).tar.gz
+Source0:        https://github.com/crowdsecurity/%{name}/archive/v%(echo $VERSION).tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  git
@@ -24,7 +24,7 @@ BuildRequires:  make
 %global __mangle_shebangs_exclude_from /usr/bin/env
 
 %prep
-%setup -n crowdsec-custom-bouncer-bouncer-%{version}
+%setup -n crowdsec-custom-bouncer-%{version}
 
 %build
 BUILD_VERSION=%{local_version} make
