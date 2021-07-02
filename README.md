@@ -84,10 +84,10 @@ custom_binary.sh del 1.2.3.4/32 3600 "test blacklist"
 ## Configuration
 
 Before starting the `crowdsec-custom-bouncer` service, please edit the configuration to add your API url and key.
-The default configuration file is located under : `/etc/crowdsec/crowdsec-custom-bouncer/`
+The default configuration file is located under : `/etc/crowdsec/bouncers/`
 
 ```sh
-$ vim /etc/crowdsec/custom-bouncer/crowdsec-custom-bouncer.yaml
+$ vim /etc/crowdsec/bouncers/crowdsec-custom-bouncer.yaml
 ```
 
 ```yaml

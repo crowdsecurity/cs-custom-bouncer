@@ -37,7 +37,7 @@ rm ${TMP}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/sbin
 install -m 755 -D %{name}  %{buildroot}%{_bindir}/%{name}
-install -m 600 -D config/%{name}.yaml %{buildroot}/etc/crowdsec/%{name}/%{name}.yaml 
+install -m 600 -D config/%{name}.yaml %{buildroot}/etc/crowdsec/bouncers/%{name}.yaml 
 install -m 644 -D config/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 
 %clean
@@ -47,7 +47,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /usr/bin/%{name}
 %{_unitdir}/%{name}.service
-%config(noreplace) /etc/crowdsec/%{name}/%{name}.yaml 
+%config(noreplace) /etc/crowdsec/bouncers/%{name}.yaml 
 
 
 %post
@@ -73,15 +73,15 @@ if [ "$?" -eq "0" ] ; then
 fi
 
 TMP=`mktemp -p /tmp/`
-cp /etc/crowdsec/crowdsec-custom-bouncer/crowdsec-custom-bouncer.yaml ${TMP}
-API_KEY=${API_KEY} envsubst < ${TMP} > /etc/crowdsec/crowdsec-custom-bouncer/crowdsec-custom-bouncer.yaml
+cp /etc/crowdsec/bouncers/crowdsec-custom-bouncer.yaml ${TMP}
+API_KEY=${API_KEY} envsubst < ${TMP} > /etc/crowdsec/bouncers/crowdsec-custom-bouncer.yaml
 rm ${TMP}
 
 if [ ${START} -eq 0 ] ; then
     echo "no api key was generated, won't start service"
 fi
 
-echo "please enter the binary path in '/etc/crowdsec/crowdsec-custom-bouncer/crowdsec-custom-bouncer.yaml' and start the bouncer via 'sudo systemctl start crowdsec-custom-bouncer' "
+echo "please enter the binary path in '/etc/crowdsec/bouncers/crowdsec-custom-bouncer.yaml' and start the bouncer via 'sudo systemctl start crowdsec-custom-bouncer' "
 
 
  
