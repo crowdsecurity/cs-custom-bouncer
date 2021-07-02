@@ -24,7 +24,7 @@ BuildRequires:  make
 %global __mangle_shebangs_exclude_from /usr/bin/env
 
 %prep
-%setup -n cs-custom-bouncer-%{version}
+%setup -n crowdsec-custom-bouncer-%{version}
 
 %build
 BUILD_VERSION=%{local_version} make
