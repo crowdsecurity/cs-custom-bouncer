@@ -50,7 +50,7 @@ rm -rf %{buildroot}
 %config(noreplace) /etc/crowdsec/bouncers/%{name}.yaml 
 
 
-%post
+%post -p /bin/bash
 systemctl daemon-reload
 
 
@@ -89,6 +89,20 @@ echo "please enter the binary path in '/etc/crowdsec/bouncers/crowdsec-custom-bo
 * Wed Jun 30 2021 Shivam Sandbhor <shivam@crowdsec.net>
 - First initial packaging
 
-%preun
-systemctl stop crowdsec-custom-bouncer || echo "cannot stop service"
-systemctl disable crowdsec-custom-bouncer || echo "cannot disable service"
+%preun -p /bin/bash
+
+if [ "$1" == "0" ] ; then
+    systemctl stop crowdsec-custom-bouncer || echo "cannot stop service"
+    systemctl disable crowdsec-custom-bouncer || echo "cannot disable service"
+fi
+
+
+
+%postun -p /bin/bash
+
+if [ "$1" == "1" ] ; then
+    systemctl restart  crowdsec-custom-bouncer || echo "cannot restart service"
+elif [ "$1" == "0" ] ; then
+    systemctl stop crowdsec-custom-bouncer
+    systemctl disable crowdsec-custom-bouncer
+fi
