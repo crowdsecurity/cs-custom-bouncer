@@ -35,7 +35,7 @@ rm ${TMP}
 
 %install
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/sbin
+mkdir -p %{buildroot}/usr/bin
 install -m 755 -D %{name}  %{buildroot}%{_bindir}/%{name}
 install -m 600 -D config/%{name}.yaml %{buildroot}/etc/crowdsec/bouncers/%{name}.yaml 
 install -m 644 -D config/%{name}.service %{buildroot}%{_unitdir}/%{name}.service

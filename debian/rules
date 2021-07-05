@@ -15,9 +15,9 @@ override_dh_auto_test:
 override_dh_auto_build:
 override_dh_auto_install:
 	make
-	mkdir -p debian/crowdsec-custom-bouncer/usr/sbin
-	cp crowdsec-custom-bouncer  debian/crowdsec-custom-bouncer/usr/sbin
+	mkdir -p debian/crowdsec-custom-bouncer/usr/bin
+	cp crowdsec-custom-bouncer  debian/crowdsec-custom-bouncer/usr/bin
 	mkdir -p debian/crowdsec-custom-bouncer/etc/systemd/system/
 	mkdir -p debian/crowdsec-custom-bouncer/etc/crowdsec/bouncers/
-	BIN=/sbin/crowdsec-custom-bouncer CFG=/etc/crowdsec/bouncers envsubst < config/crowdsec-custom-bouncer.service >  debian/crowdsec-custom-bouncer/etc/systemd/system/crowdsec-custom-bouncer.service
+	BIN=/usr/bin/crowdsec-custom-bouncer CFG=/etc/crowdsec/bouncers envsubst < config/crowdsec-custom-bouncer.service >  debian/crowdsec-custom-bouncer/etc/systemd/system/crowdsec-custom-bouncer.service
 	cp config/crowdsec-custom-bouncer.yaml debian/crowdsec-custom-bouncer/etc/crowdsec/bouncers/
