@@ -100,7 +100,10 @@ log_dir: /var/log/
 log_level: info
 api_url: <API_URL>  # when install, default is "localhost:8080"
 api_key: <API_KEY>  # Add your API key generated with `cscli bouncers add --name <bouncer_name>`
+cache_retention_duration: 10s 
 ```
+
+`cache_retention_duration` : The bouncer keeps track of all custom script invocations from the last `cache_retention_duration` interval. If a decision is identical to some decision already present in the cache, then the custom script is not invoked. The keys for hashing a decision is it's `Type` (eg `ban`, `captcha` etc) and `Value` (eg `1.2.3.4`,  `CH` etc).
 
 You can then start the service:
 
