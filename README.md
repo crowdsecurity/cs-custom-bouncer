@@ -19,6 +19,27 @@ crowdsec-custom-bouncer will periodically fetch new and expired/removed decision
 
 ## Installation
 
+#### Debian/Ubuntu
+
+[Setup crowdsec repositories](https://doc.crowdsec.net/Crowdsec/v1/getting_started/installation/#setup-the-repository).
+
+
+```bash
+sudo apt-get update
+sudo apt-get install crowdsec-custom-bouncer
+```
+
+#### RHEL/CentOS/Fedora
+
+[Setup crowdsec repositories](https://doc.crowdsec.net/Crowdsec/v1/getting_started/installation/#setup-the-repository_1).
+
+
+```bash
+sudo yum update
+sudo yum install crowdsec-custom-bouncer
+```
+
+
 ### With installer
 
 First, download the latest [`crowdsec-custom-bouncer` release](https://github.com/crowdsecurity/cs-custom-bouncer/releases).
