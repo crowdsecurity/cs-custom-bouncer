@@ -70,5 +70,11 @@ func NewConfig(configPath string) (*bouncerConfig, error) {
 	} else if config.LogMode != "stdout" {
 		return &bouncerConfig{}, fmt.Errorf("log mode '%s' unknown, expecting 'file' or 'stdout'", config.LogMode)
 	}
+
+	if config.CacheRetentionDuration == 0 {
+		log.Infof("cache_retention_duration defaults to 10 seconds")
+		config.CacheRetentionDuration = time.Duration(10 * time.Second)
+	}
+
 	return config, nil
 }
