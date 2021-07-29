@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/crowdsecurity/crowdsec-custom-bouncer/raw/main/docs/assets/crowdsec_custom_logo.png" alt="CrowdSec" title="CrowdSec" width="280" height="300" />
+<img src="https://github.com/crowdsecurity/cs-custom-bouncer/raw/main/docs/assets/crowdsec_custom_logo.png" alt="CrowdSec" title="CrowdSec" width="280" height="300" />
 </p>
 <p align="center">
 <img src="https://img.shields.io/badge/build-pass-green">
@@ -21,7 +21,7 @@ crowdsec-custom-bouncer will periodically fetch new and expired/removed decision
 
 ### With installer
 
-First, download the latest [`crowdsec-custom-bouncer` release](https://github.com/crowdsecurity/crowdsec-custom-bouncer/releases).
+First, download the latest [`crowdsec-custom-bouncer` release](https://github.com/crowdsecurity/cs-custom-bouncer/releases).
 
 ```sh
 $ tar xzvf crowdsec-custom-bouncer.tgz
@@ -50,7 +50,7 @@ sudo systemctl start crowdsec-custom-bouncer
 
 ## Upgrade
 
-If you already have `crowdsec-custom-bouncer` installed, please download the [latest release](https://github.com/crowdsecurity/crowdsec-custom-bouncer/releases) and run the following commands to upgrade it:
+If you already have `crowdsec-custom-bouncer` installed, please download the [latest release](https://github.com/crowdsecurity/cs-custom-bouncer/releases) and run the following commands to upgrade it:
 
 ```bash
 tar xzvf crowdsec-custom-bouncer.tgz
