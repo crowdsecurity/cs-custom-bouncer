@@ -10,6 +10,7 @@ import (
 
 	"github.com/coreos/go-systemd/daemon"
 	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus/hooks/writer"
 
 	"github.com/crowdsecurity/crowdsec-custom-bouncer/pkg/version"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
@@ -65,6 +66,14 @@ func main() {
 	if configPath == nil || *configPath == "" {
 		log.Fatalf("configuration file is required")
 	}
+
+	log.AddHook(&writer.Hook{ // Send logs with level fatal to stderr
+		Writer: os.Stderr,
+		LogLevels: []log.Level{
+			log.PanicLevel,
+			log.FatalLevel,
+		},
+	})
 
 	config, err := NewConfig(*configPath)
 	if err != nil {
