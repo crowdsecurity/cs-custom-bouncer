@@ -3,6 +3,7 @@ module github.com/crowdsecurity/crowdsec-custom-bouncer
 go 1.14
 
 require (
+	github.com/ahmetb/dlog v0.0.0-20170105205344-4fb5f8204f26 // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
 	github.com/crowdsecurity/crowdsec v1.2.2
 	github.com/crowdsecurity/go-cs-bouncer v0.0.0-20211102140123-4cf1e1b3f89b
