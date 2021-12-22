@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
-	github.com/crowdsecurity/crowdsec v1.2.1
+	github.com/crowdsecurity/crowdsec v1.2.2
 	github.com/crowdsecurity/go-cs-bouncer v0.0.0-20211102140123-4cf1e1b3f89b
 	github.com/sirupsen/logrus v1.8.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
