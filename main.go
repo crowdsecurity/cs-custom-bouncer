@@ -57,11 +57,16 @@ func HandleSignals(custom *customBouncer) {
 
 func main() {
 	var err error
-	log.Infof("crowdsec-custom-bouncer %s", version.VersionStr())
 	configPath := flag.String("c", "", "path to crowdsec-custom-bouncer.yaml")
 	verbose := flag.Bool("v", false, "set verbose mode")
+	bouncerVersion := flag.Bool("version", false, "display version and exit")
 
 	flag.Parse()
+
+	if *bouncerVersion {
+		fmt.Printf("%s", version.ShowStr())
+		os.Exit(0)
+	}
 
 	if configPath == nil || *configPath == "" {
 		log.Fatalf("configuration file is required")
