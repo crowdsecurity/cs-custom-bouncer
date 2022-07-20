@@ -33,7 +33,7 @@ func termHandler(sig os.Signal, custom *customBouncer) error {
 func HandleSignals(custom *customBouncer) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan,
-		syscall.SIGTERM)
+		syscall.SIGTERM, syscall.SIGINT)
 
 	exitChan := make(chan int)
 	go func() {
@@ -41,7 +41,7 @@ func HandleSignals(custom *customBouncer) {
 			s := <-signalChan
 			switch s {
 			// kill -SIGTERM XXXX
-			case syscall.SIGTERM:
+			case syscall.SIGTERM, syscall.SIGINT:
 				if err := termHandler(s, custom); err != nil {
 					log.Fatalf("shutdown fail: %s", err)
 				}
@@ -100,18 +100,23 @@ func main() {
 
 	bouncer := &csbouncer.StreamBouncer{}
 	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.VersionStr())
-	err = bouncer.Config(*configPath)
 
+	err = bouncer.Config(*configPath)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Error(err.Error())
+		return
 	}
 
 	if err := bouncer.Init(); err != nil {
-		log.Fatalf(err.Error())
+		log.Error(err.Error())
+		return
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
 
-	go bouncer.Run()
+	t.Go(func() error {
+		bouncer.Run()
+		return fmt.Errorf("stream api init failed")
+	})
 
 	t.Go(func() error {
 		log.Printf("Processing new and deleted decisions . . .")
@@ -144,16 +149,16 @@ func main() {
 		}
 	})
 
-	if config.Daemon == true {
+	if config.Daemon {
 		sent, err := daemon.SdNotify(false, "READY=1")
 		if !sent && err != nil {
 			log.Errorf("Failed to notify: %v", err)
 		}
-		HandleSignals(custom)
+		go HandleSignals(custom)
 	}
 
 	err = t.Wait()
 	if err != nil {
-		log.Fatalf("process return with error: %s", err)
+		log.Errorf("process return with error: %s", err)
 	}
 }
