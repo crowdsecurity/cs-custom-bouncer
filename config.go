@@ -21,8 +21,10 @@ type bouncerConfig struct {
 	LogMode                string        `yaml:"log_mode"`
 	LogDir                 string        `yaml:"log_dir"`
 	LogLevel               log.Level     `yaml:"log_level"`
-	APIUrl                 string        `yaml:"api_url"`
-	APIKey                 string        `yaml:"api_key"`
+	CompressLogs           *bool         `yaml:"compress_logs,omitempty"`
+	LogMaxSize             int           `yaml:"log_max_size,omitempty"`
+	LogMaxFiles            int           `yaml:"log_max_files,omitempty"`
+	LogMaxAge              int           `yaml:"log_max_age,omitempty"`
 	CacheRetentionDuration time.Duration `yaml:"cache_retention_duration"`
 }
 
@@ -36,13 +38,16 @@ func NewConfig(configPath string) (*bouncerConfig, error) {
 		return &bouncerConfig{}, fmt.Errorf("failed to read %s : %v", configPath, err)
 	}
 
-	err = yaml.UnmarshalStrict(configBuff, &config)
+	err = yaml.Unmarshal(configBuff, &config)
 	if err != nil {
 		return &bouncerConfig{}, fmt.Errorf("failed to unmarshal %s : %v", configPath, err)
 	}
 
-	if config.BinPath == "" || config.LogMode == "" {
-		return &bouncerConfig{}, fmt.Errorf("invalid configuration in %s", configPath)
+	if config.BinPath == "" {
+		return &bouncerConfig{}, fmt.Errorf("bin_path is not set")
+	}
+	if config.LogMode == "" {
+		return &bouncerConfig{}, fmt.Errorf("log_mode is not net")
 	}
 
 	_, err = os.Stat(config.BinPath)
@@ -51,7 +56,7 @@ func NewConfig(configPath string) (*bouncerConfig, error) {
 	}
 
 	/*Configure logging*/
-	if err = types.SetDefaultLoggerConfig(config.LogMode, config.LogDir, config.LogLevel); err != nil {
+	if err = types.SetDefaultLoggerConfig(config.LogMode, config.LogDir, config.LogLevel, config.LogMaxSize, config.LogMaxFiles, config.LogMaxAge, config.CompressLogs, false); err != nil {
 		log.Fatal(err.Error())
 	}
 	if config.LogMode == "file" {
