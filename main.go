@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -10,6 +12,8 @@ import (
 	"time"
 
 	"github.com/coreos/go-systemd/daemon"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/writer"
 
@@ -118,6 +122,19 @@ func main() {
 		bouncer.Run()
 		return fmt.Errorf("stream api init failed")
 	})
+	if config.PrometheusConfig.Enabled {
+		prometheus.MustRegister(csbouncer.TotalLAPICalls, csbouncer.TotalLAPIError)
+		go func() {
+			http.Handle("/metrics", promhttp.Handler())
+			listenOn := net.JoinHostPort(
+				config.PrometheusConfig.ListenAddress,
+				config.PrometheusConfig.ListenPort,
+			)
+			log.Infof("Serving metrics at %s", listenOn+"/metrics")
+			log.Error(http.ListenAndServe(listenOn, nil))
+		}()
+	}
+	go bouncer.Run()
 	if config.FeedViaStdin {
 		t.Go(
 			func() error {
