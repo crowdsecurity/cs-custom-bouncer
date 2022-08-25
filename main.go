@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
 	"syscall"
 	"time"
@@ -89,7 +90,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	custom, err := newCustomBouncer(config.BinPath)
+	custom, err := newCustomBouncer(config)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -117,6 +118,41 @@ func main() {
 		bouncer.Run()
 		return fmt.Errorf("stream api init failed")
 	})
+	if config.FeedViaStdin {
+		t.Go(
+			func() error {
+				f := func() error {
+					c := exec.Command(config.BinPath)
+					s, err := c.StdinPipe()
+					if err != nil {
+						return err
+					}
+					custom.binaryStdin = s
+					if err := c.Start(); err != nil {
+						return err
+					}
+
+					return c.Wait()
+				}
+				var err error
+				if config.TotalRetries == -1 {
+					for {
+						err := f()
+						log.Error(err)
+					}
+				} else {
+					for i := 0; i <= config.TotalRetries; i++ {
+						err = f()
+					}
+				}
+				log.Error("maximum retries exceeded for binary. Exiting")
+				t.Kill(err)
+				return err
+
+			},
+		)
+
+	}
 
 	t.Go(func() error {
 		log.Printf("Processing new and deleted decisions . . .")
@@ -157,8 +193,7 @@ func main() {
 		go HandleSignals(custom)
 	}
 
-	err = t.Wait()
-	if err != nil {
+	if err := t.Wait(); err != nil {
 		log.Errorf("process return with error: %s", err)
 	}
 }
