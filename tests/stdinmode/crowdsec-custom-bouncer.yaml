@@ -10,7 +10,7 @@ cache_retention_duration: 10s
 daemonize: false
 log_mode: stdout
 log_dir: /var/log/
-log_level: debug
+log_level: info
 api_url: http://localhost:8081/
 api_key: 1237adaf7a1724ac68a3288828820a67
 
