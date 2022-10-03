@@ -1,4 +1,4 @@
-bin_path: /home/shivam/work/cs-custom-bouncer/tests/stdinmode/custombinary
+bin_path: tests/stdinmode/custombinary
 feed_via_stdin: true # Invokes binary once and feeds incoming decisions to it's stdin.
 total_retries: 2 # number of times to restart binary. relevant if feed_via_stdin=true . Set to -1 for infinite retries.
 include_scenarios_containing: [] # ignore IPs banned for triggering scenarios not containing either of provided word, eg ["ssh", "http"]
