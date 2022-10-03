@@ -125,7 +125,6 @@ func main() {
 		return
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
-
 	go bouncer.Run()
 	if config.PrometheusConfig.Enabled {
 		listenOn := net.JoinHostPort(
@@ -178,7 +177,6 @@ func main() {
 				log.Error("maximum retries exceeded for binary. Exiting")
 				t.Kill(err)
 				return err
-
 			},
 		)
 

@@ -51,4 +51,11 @@ release: build
 	@chmod +x $(RELDIR)/uninstall.sh
 	@chmod +x $(RELDIR)/upgrade.sh
 	@tar cvzf crowdsec-custom-bouncer.tgz $(RELDIR)
-	
+
+.PHONY: func-tests
+func-tests: build
+	( \
+	$(PYTHON) -m venv tests/venv ; \
+	tests/venv/bin/$(PIP) install -r tests/requirements.txt ; \
+	sudo tests/venv/bin/$(PYTHON) -B -m unittest -v ; \
+	)

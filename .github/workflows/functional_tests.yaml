@@ -1,0 +1,24 @@
+name: Functional Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  install_crowdsec:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.19
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.19
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: Install deps for tests
+      run: sudo apt install -y nftables iptables ipset
+    - name: Run tests
+      run: sudo make func-tests

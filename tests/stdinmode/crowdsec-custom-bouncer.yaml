@@ -1,0 +1,20 @@
+bin_path: /home/shivam/work/cs-custom-bouncer/tests/stdinmode/custombinary
+feed_via_stdin: true # Invokes binary once and feeds incoming decisions to it's stdin.
+total_retries: 2 # number of times to restart binary. relevant if feed_via_stdin=true . Set to -1 for infinite retries.
+include_scenarios_containing: [] # ignore IPs banned for triggering scenarios not containing either of provided word, eg ["ssh", "http"]
+exclude_scenarios_containing: [] # ignore IPs banned for triggering scenarios containing either of provided word
+only_include_decisions_from: []
+piddir: /var/run/
+update_frequency: 0.1s
+cache_retention_duration: 10s
+daemonize: false
+log_mode: stdout
+log_dir: /var/log/
+log_level: debug
+api_url: http://localhost:8081/
+api_key: 1237adaf7a1724ac68a3288828820a67
+
+prometheus:
+  enabled: false
+  listen_addr: 127.0.0.1
+  listen_port: 60602 

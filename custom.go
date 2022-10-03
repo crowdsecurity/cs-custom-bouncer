@@ -20,6 +20,7 @@ type DecisionKey struct {
 
 type DecisionWithAction struct {
 	models.Decision
+	ID     int64  `json:"id"`
 	Action string `json:"action,omitempty"`
 }
 
@@ -73,6 +74,7 @@ func (c *customBouncer) Add(decision *models.Decision) error {
 	}
 	if c.feedViaStdin {
 		fmt.Fprintln(c.binaryStdin, str)
+		c.newDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 		return nil
 	}
 	cmd := exec.Command(c.path, "add", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
@@ -99,6 +101,7 @@ func (c *customBouncer) Delete(decision *models.Decision) error {
 	}
 	if c.feedViaStdin {
 		fmt.Fprintln(c.binaryStdin, str)
+		c.expiredDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 		return nil
 	}
 	if err != nil {
@@ -118,7 +121,7 @@ func (c *customBouncer) ShutDown() error {
 }
 
 func serializeDecision(decision *models.Decision, action string) (string, error) {
-	d := DecisionWithAction{Decision: *decision, Action: action}
+	d := DecisionWithAction{Decision: *decision, Action: action, ID: decision.ID}
 	serbyte, err := json.Marshal(d)
 	if err != nil {
 		return "", fmt.Errorf("serialize error : %s", err)
