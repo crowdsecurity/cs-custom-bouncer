@@ -125,7 +125,10 @@ func main() {
 		return
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
-	go bouncer.Run()
+	go func() {
+		bouncer.Run()
+		t.Kill(fmt.Errorf("stream init failed"))
+	}()
 	if config.PrometheusConfig.Enabled {
 		listenOn := net.JoinHostPort(
 			config.PrometheusConfig.ListenAddress,
