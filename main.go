@@ -155,11 +155,12 @@ func main() {
 				if config.TotalRetries == -1 {
 					for {
 						err := f()
-						log.Error(err)
+						log.Errorf("Binary exited: %s", err)
 					}
 				} else {
 					for i := 0; i <= config.TotalRetries; i++ {
 						err = f()
+						log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
 					}
 				}
 				log.Error("maximum retries exceeded for binary. Exiting")
