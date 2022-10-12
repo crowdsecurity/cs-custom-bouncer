@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net"
@@ -62,6 +63,7 @@ func HandleSignals(custom *customBouncer) {
 
 func main() {
 	var err error
+	var promServer *http.Server
 	configPath := flag.String("c", "", "path to crowdsec-custom-bouncer.yaml")
 	verbose := flag.Bool("v", false, "set verbose mode")
 	bouncerVersion := flag.Bool("version", false, "display version and exit")
@@ -118,23 +120,27 @@ func main() {
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
 
-	t.Go(func() error {
-		bouncer.Run()
-		return fmt.Errorf("stream api init failed")
-	})
+	go bouncer.Run()
 	if config.PrometheusConfig.Enabled {
-		prometheus.MustRegister(csbouncer.TotalLAPICalls, csbouncer.TotalLAPIError)
-		go func() {
-			http.Handle("/metrics", promhttp.Handler())
-			listenOn := net.JoinHostPort(
+		listenOn := net.JoinHostPort(
+			config.PrometheusConfig.ListenAddress,
+			config.PrometheusConfig.ListenPort,
+		)
+		muxer := http.NewServeMux()
+		promServer = &http.Server{
+			Addr: net.JoinHostPort(
 				config.PrometheusConfig.ListenAddress,
 				config.PrometheusConfig.ListenPort,
-			)
+			),
+			Handler: muxer,
+		}
+		muxer.Handle("/metrics", promhttp.Handler())
+		prometheus.MustRegister(csbouncer.TotalLAPICalls, csbouncer.TotalLAPIError)
+		go func() {
 			log.Infof("Serving metrics at %s", listenOn+"/metrics")
-			log.Error(http.ListenAndServe(listenOn, nil))
+			log.Error(promServer.ListenAndServe())
 		}()
 	}
-	go bouncer.Run()
 	if config.FeedViaStdin {
 		t.Go(
 			func() error {
@@ -178,6 +184,10 @@ func main() {
 			select {
 			case <-t.Dying():
 				log.Infoln("terminating bouncer process")
+				if config.PrometheusConfig.Enabled {
+					log.Infoln("terminating prometheus server")
+					promServer.Shutdown(context.Background())
+				}
 				return nil
 			case decisions := <-bouncer.Stream:
 				log.Infof("deleting '%d' decisions", len(decisions.Deleted))
