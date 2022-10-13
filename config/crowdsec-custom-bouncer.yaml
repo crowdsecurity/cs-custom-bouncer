@@ -1,4 +1,9 @@
 bin_path: ${BINARY_PATH}
+feed_via_stdin: false # Invokes binary once and feeds incoming decisions to it's stdin.
+total_retries: 0 # number of times to restart binary. relevant if feed_via_stdin=true . Set to -1 for infinite retries.
+include_scenarios_containing: [] # ignore IPs banned for triggering scenarios not containing either of provided word, eg ["ssh", "http"]
+exclude_scenarios_containing: [] # ignore IPs banned for triggering scenarios containing either of provided word
+only_include_decisions_from: []
 piddir: /var/run/
 update_frequency: 10s
 cache_retention_duration: 10s
@@ -6,5 +11,14 @@ daemonize: true
 log_mode: file
 log_dir: /var/log/
 log_level: info
+log_compression: true
+log_max_size: 100
+log_max_backups: 3
+log_max_age: 30
 api_url: http://localhost:8080/
 api_key: ${API_KEY}
+
+prometheus:
+  enabled: true
+  listen_addr: 127.0.0.1
+  listen_port: 60602 

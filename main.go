@@ -1,14 +1,20 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"net"
+	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/coreos/go-systemd/daemon"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/writer"
 
@@ -57,6 +63,7 @@ func HandleSignals(custom *customBouncer) {
 
 func main() {
 	var err error
+	var promServer *http.Server
 	configPath := flag.String("c", "", "path to crowdsec-custom-bouncer.yaml")
 	verbose := flag.Bool("v", false, "set verbose mode")
 	bouncerVersion := flag.Bool("version", false, "display version and exit")
@@ -89,7 +96,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	custom, err := newCustomBouncer(config.BinPath)
+	custom, err := newCustomBouncer(config)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -113,10 +120,63 @@ func main() {
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
 
-	t.Go(func() error {
-		bouncer.Run()
-		return fmt.Errorf("stream api init failed")
-	})
+	go bouncer.Run()
+	if config.PrometheusConfig.Enabled {
+		listenOn := net.JoinHostPort(
+			config.PrometheusConfig.ListenAddress,
+			config.PrometheusConfig.ListenPort,
+		)
+		muxer := http.NewServeMux()
+		promServer = &http.Server{
+			Addr: net.JoinHostPort(
+				config.PrometheusConfig.ListenAddress,
+				config.PrometheusConfig.ListenPort,
+			),
+			Handler: muxer,
+		}
+		muxer.Handle("/metrics", promhttp.Handler())
+		prometheus.MustRegister(csbouncer.TotalLAPICalls, csbouncer.TotalLAPIError)
+		go func() {
+			log.Infof("Serving metrics at %s", listenOn+"/metrics")
+			log.Error(promServer.ListenAndServe())
+		}()
+	}
+	if config.FeedViaStdin {
+		t.Go(
+			func() error {
+				f := func() error {
+					c := exec.Command(config.BinPath)
+					s, err := c.StdinPipe()
+					if err != nil {
+						return err
+					}
+					custom.binaryStdin = s
+					if err := c.Start(); err != nil {
+						return err
+					}
+
+					return c.Wait()
+				}
+				var err error
+				if config.TotalRetries == -1 {
+					for {
+						err := f()
+						log.Errorf("Binary exited: %s", err)
+					}
+				} else {
+					for i := 0; i <= config.TotalRetries; i++ {
+						err = f()
+						log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
+					}
+				}
+				log.Error("maximum retries exceeded for binary. Exiting")
+				t.Kill(err)
+				return err
+
+			},
+		)
+
+	}
 
 	t.Go(func() error {
 		log.Printf("Processing new and deleted decisions . . .")
@@ -124,6 +184,10 @@ func main() {
 			select {
 			case <-t.Dying():
 				log.Infoln("terminating bouncer process")
+				if config.PrometheusConfig.Enabled {
+					log.Infoln("terminating prometheus server")
+					promServer.Shutdown(context.Background())
+				}
 				return nil
 			case decisions := <-bouncer.Stream:
 				log.Infof("deleting '%d' decisions", len(decisions.Deleted))
@@ -157,8 +221,7 @@ func main() {
 		go HandleSignals(custom)
 	}
 
-	err = t.Wait()
-	if err != nil {
+	if err := t.Wait(); err != nil {
 		log.Errorf("process return with error: %s", err)
 	}
 }
