@@ -18,7 +18,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/writer"
 
-	"github.com/crowdsecurity/crowdsec-custom-bouncer/pkg/version"
+	"github.com/crowdsecurity/cs-custom-bouncer/pkg/version"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
 	"gopkg.in/tomb.v2"
 )
