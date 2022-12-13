@@ -1,4 +1,4 @@
-module github.com/crowdsecurity/crowdsec-custom-bouncer
+module github.com/crowdsecurity/cs-custom-bouncer
 
 go 1.19
 
