@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"flag"
 	"fmt"
@@ -87,7 +88,12 @@ func main() {
 		},
 	})
 
-	config, err := NewConfig(*configPath)
+	configBytes, err := mergedConfig(*configPath)
+	if err != nil {
+		log.Fatalf("unable to read config file: %s", err)
+	}
+
+	config, err := newConfig(bytes.NewReader(configBytes))
 	if err != nil {
 		log.Fatalf("unable to load configuration: %s", err)
 	}

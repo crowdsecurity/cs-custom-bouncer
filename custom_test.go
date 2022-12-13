@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
@@ -33,7 +32,7 @@ type parsedLine struct {
 }
 
 func parseFile(path string) []parsedLine {
-	dat, err := ioutil.ReadFile(binaryOutputFile)
+	dat, err := os.ReadFile(binaryOutputFile)
 	parsedLines := make([]parsedLine, 0)
 	if err != nil {
 		panic(err)
