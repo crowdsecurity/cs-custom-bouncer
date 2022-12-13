@@ -10,9 +10,8 @@ PREFIX?="/"
 PID_DIR = $(PREFIX)"/var/run/"
 BINARY_NAME=crowdsec-custom-bouncer
 
-
 #Current versioning information from env
-BUILD_VERSION?="$(shell git describe --tags `git rev-list --tags --max-count=1`)"
+BUILD_VERSION?="$(shell git describe --tags)"
 BUILD_GOVERSION="$(shell go version | cut -d " " -f3 | sed -r 's/[go]+//g')"
 BUILD_TIMESTAMP=$(shell date +%F"_"%T)
 BUILD_TAG="$(shell git rev-parse HEAD)"
@@ -22,7 +21,6 @@ export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/cs-custom-bouncer/pkg
 -X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.GoVersion=$(BUILD_GOVERSION)"
 
 RELDIR = "crowdsec-custom-bouncer-${BUILD_VERSION}"
-
 
 all: clean test build
 
@@ -39,7 +37,6 @@ clean:
 	@rm -f $(BINARY_NAME)
 	@rm -rf ${RELDIR}
 	@rm -f crowdsec-custom-bouncer.tgz || ""
-
 
 .PHONY: release
 release: build

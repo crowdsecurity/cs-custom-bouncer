@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
-	"github.com/crowdsecurity/crowdsec/pkg/types"
 	log "github.com/sirupsen/logrus"
-
 	"gopkg.in/natefinch/lumberjack.v2"
 	"gopkg.in/yaml.v2"
+
+	"github.com/crowdsecurity/crowdsec/pkg/types"
+	"github.com/crowdsecurity/crowdsec/pkg/yamlpatch"
 )
 
 type PrometheusConfig struct {
@@ -47,12 +47,13 @@ func NewConfig(configPath string) (*bouncerConfig, error) {
 
 	config := &bouncerConfig{}
 
-	configBuff, err := ioutil.ReadFile(configPath)
+	patcher := yamlpatch.NewPatcher(configPath, ".local")
+	fcontent, err := patcher.MergedPatchContent()
 	if err != nil {
-		return &bouncerConfig{}, fmt.Errorf("failed to read %s : %v", configPath, err)
+		return &bouncerConfig{}, err
 	}
 
-	err = yaml.Unmarshal(configBuff, &config)
+	err = yaml.Unmarshal(fcontent, &config)
 	if err != nil {
 		return &bouncerConfig{}, fmt.Errorf("failed to unmarshal %s : %v", configPath, err)
 	}
