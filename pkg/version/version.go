@@ -3,6 +3,7 @@ package version
 import (
 	"fmt"
 	"log"
+	"runtime"
 )
 
 /*
@@ -21,7 +22,7 @@ var (
 	Version   string // = "v0.0.0"
 	BuildDate string // = "I don't remember exactly"
 	Tag       string // = "dev"
-	GoVersion string // = "1.13"
+	GoVersion = runtime.Version() // = "1.13"
 )
 
 func ShowStr() string {
