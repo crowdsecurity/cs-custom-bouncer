@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -42,20 +43,29 @@ type bouncerConfig struct {
 	PrometheusConfig           PrometheusConfig `yaml:"prometheus"`
 }
 
-func NewConfig(configPath string) (*bouncerConfig, error) {
+// mergedConfig() returns the byte content of the patched configuration file (with .yaml.local).
+func mergedConfig(configPath string) ([]byte, error) {
+	patcher := yamlpatch.NewPatcher(configPath, ".local")
+	data, err := patcher.MergedPatchContent()
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func newConfig(reader io.Reader) (*bouncerConfig, error) {
 	var LogOutput *lumberjack.Logger //io.Writer
 
 	config := &bouncerConfig{}
 
-	patcher := yamlpatch.NewPatcher(configPath, ".local")
-	fcontent, err := patcher.MergedPatchContent()
+	fcontent, err := io.ReadAll(reader)
 	if err != nil {
 		return &bouncerConfig{}, err
 	}
 
 	err = yaml.Unmarshal(fcontent, &config)
 	if err != nil {
-		return &bouncerConfig{}, fmt.Errorf("failed to unmarshal %s : %v", configPath, err)
+		return &bouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
 	if config.BinPath == "" {
