@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
-	github.com/crowdsecurity/crowdsec v1.4.3
+	github.com/crowdsecurity/crowdsec v1.4.1
 	github.com/crowdsecurity/go-cs-bouncer v0.0.2
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/prometheus/client_golang v1.14.0
