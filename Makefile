@@ -12,13 +12,11 @@ BINARY_NAME=crowdsec-custom-bouncer
 
 #Current versioning information from env
 BUILD_VERSION?="$(shell git describe --tags)"
-BUILD_GOVERSION="$(shell go version | cut -d " " -f3 | sed -r 's/[go]+//g')"
 BUILD_TIMESTAMP=$(shell date +%F"_"%T)
 BUILD_TAG="$(shell git rev-parse HEAD)"
 export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Version=$(BUILD_VERSION) \
 -X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.BuildDate=$(BUILD_TIMESTAMP) \
--X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Tag=$(BUILD_TAG) \
--X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.GoVersion=$(BUILD_GOVERSION)"
+-X github.com/crowdsecurity/cs-custom-bouncer/pkg/version.Tag=$(BUILD_TAG)"
 
 RELDIR = "crowdsec-custom-bouncer-${BUILD_VERSION}"
 
