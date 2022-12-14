@@ -20,6 +20,9 @@ export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/cs-custom-bouncer/pkg
 
 RELDIR = "crowdsec-custom-bouncer-${BUILD_VERSION}"
 
+PYTHON=python3
+PIP=pip
+
 all: clean test build
 
 static: clean
@@ -56,6 +59,6 @@ release: build
 func-tests: build
 	( \
 	$(PYTHON) -m venv tests/venv ; \
-	tests/venv/bin/$(PIP) install -r tests/requirements.txt ; \
+	./tests/venv/bin/$(PIP) install -r tests/requirements.txt ; \
 	sudo tests/venv/bin/$(PYTHON) -B -m unittest -v ; \
 	)
