@@ -60,5 +60,5 @@ func-tests: build
 	( \
 	$(PYTHON) -m venv tests/venv ; \
 	./tests/venv/bin/$(PIP) install -r tests/requirements.txt ; \
-	sudo tests/venv/bin/$(PYTHON) -B -m unittest -v ; \
+	tests/venv/bin/$(PYTHON) -B -m unittest -v ; \
 	)
