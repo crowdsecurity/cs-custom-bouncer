@@ -2,7 +2,6 @@ import os
 import json
 from signal import SIGKILL
 import subprocess
-import tempfile
 import unittest
 from pathlib import Path
 from time import sleep
@@ -33,8 +32,9 @@ class TestCustomBouncer(unittest.TestCase):
     def test_binary_monitor(self):
         sleep(0.5)
         bouncer_proc = psutil.Process(self.cb.pid)
+
         def kill_cb_proc():
-            binary_proc = bouncer_proc.children()[0]    
+            binary_proc = bouncer_proc.children()[0]
             os.kill(binary_proc.pid, SIGKILL)
 
         assert len(bouncer_proc.children()) == 1
@@ -50,11 +50,10 @@ class TestCustomBouncer(unittest.TestCase):
         sleep(0.5)
         assert len(bouncer_proc.children()) == 1
 
-        # This will exceed max_retry and the bouncer would stop 
+        # This will exceed max_retry and the bouncer would stop
         kill_cb_proc()
         self.cb.wait()
         assert self.cb.poll() is not None
-
 
     def test_add_decisions(self):
         self.lapi.ds.insert_decisions(generate_n_decisions(5))
@@ -75,7 +74,7 @@ class TestCustomBouncer(unittest.TestCase):
         sleep(1)
         with open("data.txt") as f:
             assert len(f.readlines()) == 2
-    
+
     def test_delete_decisions(self):
         decisions = generate_n_decisions(5)
         self.lapi.ds.insert_decisions(decisions)
@@ -89,13 +88,8 @@ class TestCustomBouncer(unittest.TestCase):
         current_decisions = set()
         for i, line in enumerate(lines):
             line = json.loads(line)
-            if line["action"] =="add":
+            if line["action"] == "add":
                 current_decisions.add(line["id"])
             elif line["action"] == "del":
                 current_decisions.remove(line["id"])
         assert len(current_decisions) == 0
-
-
-
-
-
