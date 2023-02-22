@@ -29,5 +29,6 @@ jobs:
         python3 -m pip install --upgrade pipenv wheel
     - name: Run tests
       run: |
+        make build
         pipenv install --deploy
         pipenv run pytest
