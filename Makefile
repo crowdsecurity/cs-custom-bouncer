@@ -57,8 +57,5 @@ release: build
 
 .PHONY: func-tests
 func-tests: build
-	( \
-	$(PYTHON) -m venv tests/venv ; \
-	./tests/venv/bin/$(PIP) install -r tests/requirements.txt ; \
-	tests/venv/bin/$(PYTHON) -B -m unittest -v ; \
-	)
+	pipenv install --dev
+	pipenv run pytest -v
