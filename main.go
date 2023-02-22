@@ -193,7 +193,9 @@ func main() {
 				log.Infoln("terminating bouncer process")
 				if config.PrometheusConfig.Enabled {
 					log.Infoln("terminating prometheus server")
-					promServer.Shutdown(context.Background())
+					if err := promServer.Shutdown(context.Background()); err != nil {
+						log.Errorf("unable to shutdown prometheus server: %s", err)
+					}
 				}
 				return nil
 			case decisions := <-bouncer.Stream:
