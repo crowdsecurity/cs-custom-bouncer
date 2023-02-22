@@ -31,7 +31,7 @@ type parsedLine struct {
 	sceanario string
 }
 
-func parseFile(path string) []parsedLine {
+func parseFile(path string) ([]parsedLine, error) {
 	dat, err := os.ReadFile(binaryOutputFile)
 	parsedLines := make([]parsedLine, 0)
 	if err != nil {
@@ -42,19 +42,26 @@ func parseFile(path string) []parsedLine {
 			continue
 		}
 
-		parsedLines = append(parsedLines, parseLine(line))
+		pl, err	:= parseLine(line)
+		if err != nil {
+			return nil, err
+		}
+		parsedLines = append(parsedLines, pl)
 	}
-	return parsedLines
+	return parsedLines, nil
 }
 
-func parseLine(line string) parsedLine {
+func parseLine(line string) (parsedLine, error) {
 	words := strings.Split(line, " ")
+	if len(words) < 4 {
+		return parsedLine{}, fmt.Errorf("invalid line: %s", line)
+	}
 	return parsedLine{
 		action:    words[0],
 		value:     words[1],
 		duration:  words[2],
 		sceanario: words[3],
-	}
+	}, nil
 }
 
 func cleanup() {
@@ -169,7 +176,10 @@ func Test_customBouncer_Add(t *testing.T) {
 					t.Error(err)
 				}
 			}
-			foundData := parseFile(binaryOutputFile)
+			foundData, err := parseFile(binaryOutputFile)
+			if err != nil {
+				t.Error(err)
+			}
 			if !reflect.DeepEqual(foundData, tt.expectedLines) {
 				t.Errorf("expected=%v, found=%v", tt.expectedLines, foundData)
 			}
@@ -282,7 +292,10 @@ func Test_customBouncer_Delete(t *testing.T) {
 					t.Error(err)
 				}
 			}
-			foundData := parseFile(binaryOutputFile)
+			foundData, err := parseFile(binaryOutputFile)
+			if err != nil {
+				t.Error(err)
+			}
 			if !reflect.DeepEqual(foundData, tt.expectedLines) {
 				t.Errorf("expected=%v, found=%v", tt.expectedLines, foundData)
 			}
