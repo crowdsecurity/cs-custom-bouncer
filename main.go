@@ -114,9 +114,9 @@ func main() {
 	bouncer := &csbouncer.StreamBouncer{}
 	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.VersionStr())
 
-	err = bouncer.Config(*configPath)
+	err = bouncer.ConfigReader(bytes.NewReader(configBytes))
 	if err != nil {
-		log.Error(err.Error())
+		log.Errorf("unable to configure bouncer: %s", err)
 		return
 	}
 
