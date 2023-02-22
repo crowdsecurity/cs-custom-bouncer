@@ -59,7 +59,7 @@ func parseLine(line string) parsedLine {
 
 func cleanup() {
 	if _, err := os.Stat(binaryOutputFile); err != nil {
-		fmt.Println("didnt found the file")
+		fmt.Println("didn't found the file")
 		return
 	}
 	os.Remove(binaryOutputFile)
