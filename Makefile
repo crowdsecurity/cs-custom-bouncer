@@ -20,9 +20,6 @@ export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/cs-custom-bouncer/pkg
 
 RELDIR = "crowdsec-custom-bouncer-${BUILD_VERSION}"
 
-PYTHON=python3
-PIP=pip
-
 all: clean build test
 
 static: clean
