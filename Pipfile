@@ -3,6 +3,7 @@ pytest = "*"
 flask = "*"
 pytimeparse = "*"
 psutil = "*"
+pytest-cs = {ref = "main", git = "https://github.com/crowdsecurity/pytest-cs.git"}
 
 [dev-packages]
 gnureadline = "*"

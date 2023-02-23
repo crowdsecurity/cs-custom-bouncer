@@ -14,6 +14,8 @@ import psutil
 
 import pytest
 
+from pytest_cs import WaiterGenerator
+
 from tests.mock_lapi import MockLAPI
 # from tests.utils import generate_n_decisions
 
@@ -25,6 +27,15 @@ CONFIG_PATH = SCRIPT_DIR.joinpath("crowdsec-custom-bouncer.yaml")
 
 # How long to wait for a child process to spawn
 CHILD_SPAWN_TIMEOUT = 1
+
+
+class ProcessWaiterGenerator(WaiterGenerator):
+    def __init__(self, proc):
+        self.proc = proc
+        super().__init__()
+
+    def context(self):
+        return self.proc
 
 
 class BouncerProc:
@@ -52,10 +63,10 @@ class BouncerProc:
     def get_output(self):
         return pytest.LineMatcher(self.outpath.read_text().splitlines())
 
-    def wait_for_fnmatch_lines(self, lines, timeout=2):
-        # TODO: use watcher class from pytest-cs
-        time.sleep(timeout)
-        self.get_output().fnmatch_lines(lines)
+    def wait_for_lines_fnmatch(proc, s, timeout=5):
+        for waiter in ProcessWaiterGenerator(proc):
+            with waiter as p:
+                p.get_output().fnmatch_lines(s)
 
 
 @pytest.fixture(scope='session')

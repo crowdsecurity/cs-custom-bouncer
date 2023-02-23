@@ -1,5 +1,5 @@
 """
-Full integration test with a real Crowdsec running in Docker
+Test with a mocked LAPI and fixtures
 """
 
 import json
@@ -9,15 +9,12 @@ from tests.utils import generate_n_decisions
 
 import pytest
 
-# BOUNCER_BINARY_PATH = PROJECT_ROOT.joinpath("crowdsec-custom-bouncer")
-
 LAPI_CONNECT_TIMEOUT = 1
 
 
 def test_no_lapi(bouncer):
     with bouncer() as cb:
-        time.sleep(LAPI_CONNECT_TIMEOUT)
-        cb.get_output().fnmatch_lines([
+        cb.wait_for_lines_fnmatch([
             "*connection refused*",
             "*terminating bouncer process*",
         ])
@@ -25,7 +22,7 @@ def test_no_lapi(bouncer):
 
 def test_binary_monitor(lapi, bouncer):
     with lapi(), bouncer() as cb:
-        cb.wait_for_fnmatch_lines([
+        cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
         ])
@@ -48,12 +45,12 @@ def test_binary_monitor(lapi, bouncer):
             cb.wait_for_child()
         assert len(cb.children()) == 0
 
-        # XXX: do we bother with wait() and poll()?
+        assert cb.popen.poll() is not None
 
 
 def test_add_decisions(lapi, bouncer):
     with lapi() as lp, bouncer() as cb:
-        cb.wait_for_fnmatch_lines([
+        cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
         ])
@@ -70,7 +67,7 @@ def test_add_decisions(lapi, bouncer):
 
 def test_cache_retention(lapi, bouncer):
     with lapi() as lp, bouncer() as cb:
-        cb.wait_for_fnmatch_lines([
+        cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
         ])
@@ -85,7 +82,7 @@ def test_cache_retention(lapi, bouncer):
 
 def test_delete_decisions(lapi, bouncer):
     with lapi() as lp, bouncer() as cb:
-        cb.wait_for_fnmatch_lines([
+        cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
         ])
