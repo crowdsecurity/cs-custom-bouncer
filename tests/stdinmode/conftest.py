@@ -4,29 +4,55 @@ Full integration test with a real Crowdsec running in Docker
 
 import contextlib
 import os
-# import json
 import subprocess
-# import unittest
 import time
 from pathlib import Path
-# from time import sleep
 import psutil
 
 import pytest
+import yaml
 
 from pytest_cs import WaiterGenerator
 
 from tests.mock_lapi import MockLAPI
-# from tests.utils import generate_n_decisions
 
 SCRIPT_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
 BOUNCER_BINARY_PATH = PROJECT_ROOT.joinpath("crowdsec-custom-bouncer")
-# CUSTOM_BINARY_PATH = SCRIPT_DIR.joinpath("custombinary")
-CONFIG_PATH = SCRIPT_DIR.joinpath("crowdsec-custom-bouncer.yaml")
 
 # How long to wait for a child process to spawn
 CHILD_SPAWN_TIMEOUT = 1
+
+default_config = {
+    'bin_path': 'tests/stdinmode/custombinary',
+    # Invokes binary once and feeds incoming decisions to its stdin.
+    'feed_via_stdin': True,
+    # number of times to restart binary. relevant if feed_via_stdin=true.
+    # Set to -1 for infinite retries.
+    'total_retries': 2,
+    # ignore IPs banned for triggering scenarios not containing either
+    # of provided words, eg ["ssh", "http"]
+    'scenarios_containing': [],
+    # ignore IPs banned for triggering scenarios
+    # containing either of provided words
+    'scenarios_not_containing': [],
+    'origins': [],
+    'piddir': '/var/run/',
+    'update_frequency': '0.1s',
+    'cache_retention_duration': '10s',
+    'daemonize': False,
+    'log_mode': 'stdout',
+    'log_dir': '/var/log/',
+    'log_level': 'debug',
+    'api_url': 'http://localhost:8081/',
+    'api_key': '1237adaf7a1724ac68a3288828820a67',
+
+    'prometheus': {
+        'enabled': False,
+        'listen_addr': '127.0.0.1',
+        'listen_port': '60602'
+    }
+}
 
 
 class ProcessWaiterGenerator(WaiterGenerator):
@@ -72,13 +98,18 @@ class BouncerProc:
 @pytest.fixture(scope='session')
 def bouncer(tmp_path_factory):
     @contextlib.contextmanager
-    def closure():
+    def closure(config=None):
+        if config is None:
+            config = default_config
         # create stout and stderr files
         outdir = tmp_path_factory.mktemp("output")
+        confpath = outdir / "crowdsec-custom-bouncer.yaml"
+        with open(confpath, "w") as f:
+            f.write(yaml.dump(config))
         outpath = outdir / "output.txt"
         with open(outpath, "w") as f:
             cb = subprocess.Popen(
-                    [BOUNCER_BINARY_PATH, "-c", CONFIG_PATH],
+                    [BOUNCER_BINARY_PATH, "-c", confpath.as_posix()],
                     stdout=f,
                     stderr=subprocess.STDOUT,
                     )

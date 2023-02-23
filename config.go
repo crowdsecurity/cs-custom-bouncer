@@ -22,6 +22,7 @@ type PrometheusConfig struct {
 
 type bouncerConfig struct {
 	BinPath                    string           `yaml:"bin_path"` // path to binary
+	BinArgs                    []string         `yaml:"bin_args"` // arguments for binary
 	PidDir                     string           `yaml:"piddir"`
 	UpdateFrequency            string           `yaml:"update_frequency"`
 	IncludeScenariosContaining []string         `yaml:"include_scenarios_containing"`

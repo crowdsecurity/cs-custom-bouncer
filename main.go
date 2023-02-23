@@ -153,7 +153,8 @@ func main() {
 		t.Go(
 			func() error {
 				f := func() error {
-					c := exec.Command(config.BinPath)
+					log.Debugf("Starting binary %s %s", config.BinPath, config.BinArgs)
+					c := exec.Command(config.BinPath, config.BinArgs...)
 					s, err := c.StdinPipe()
 					if err != nil {
 						return err

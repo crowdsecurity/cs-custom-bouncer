@@ -1,7 +1,6 @@
-#!/bin/bash 
-rm data.txt > /dev/null
-while read line
-do
-  echo "$line" >> data.txt
-done
-# rm data.txt > /dev/null
+#!/bin/sh
+data="data.txt"
+if [ -n "$1" ]; then
+    data="$1"
+fi
+cat -u > "$data"
