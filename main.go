@@ -125,8 +125,10 @@ func main() {
 		return
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
-
-	go bouncer.Run()
+	go func() {
+		bouncer.Run()
+		t.Kill(fmt.Errorf("stream init failed"))
+	}()
 	if config.PrometheusConfig.Enabled {
 		listenOn := net.JoinHostPort(
 			config.PrometheusConfig.ListenAddress,
@@ -178,7 +180,6 @@ func main() {
 				log.Error("maximum retries exceeded for binary. Exiting")
 				t.Kill(err)
 				return err
-
 			},
 		)
 
@@ -192,7 +193,9 @@ func main() {
 				log.Infoln("terminating bouncer process")
 				if config.PrometheusConfig.Enabled {
 					log.Infoln("terminating prometheus server")
-					promServer.Shutdown(context.Background())
+					if err := promServer.Shutdown(context.Background()); err != nil {
+						log.Errorf("unable to shutdown prometheus server: %s", err)
+					}
 				}
 				return nil
 			case decisions := <-bouncer.Stream:
