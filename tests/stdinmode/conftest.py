@@ -8,6 +8,8 @@ import subprocess
 import time
 from pathlib import Path
 import psutil
+import secrets
+import string
 
 import pytest
 import yaml
@@ -121,6 +123,41 @@ def bouncer(tmp_path_factory):
     return closure
 
 
+# Create a lapi container, registers a bouncer
+# and runs it with the updated config.
+# - Returns context manager that yields a tuple of (bouncer, lapi)
+@pytest.fixture(scope='session')
+def bouncer_with_lapi(bouncer, crowdsec, bouncer_cfg, api_key_factory, tmp_path_factory):
+    @contextlib.contextmanager
+    def closure(config_lapi=None, config_bouncer=None, api_key=None):
+        if config_bouncer is None:
+            config_bouncer = {}
+        if config_lapi is None:
+            config_lapi = {}
+        # can be overridden by config_lapi + config_bouncer
+        api_key = api_key_factory()
+        env = {
+            'BOUNCER_KEY_custom': api_key,
+        }
+        # can be overridden by config_bouncer
+        data = tmp_path_factory.mktemp("data") / 'data.txt'
+        try:
+            env.update(config_lapi)
+            with crowdsec(environment=env) as lapi:
+                lapi.wait_for_http(8080, '/health')
+                port = lapi.probe.get_bound_port('8080')
+                bouncer_cfg['api_url'] = f'http://localhost:{port}/'
+                bouncer_cfg['api_key'] = api_key
+                bouncer_cfg['bin_args'] = [data.as_posix()]
+                bouncer_cfg.update(config_bouncer)
+                with bouncer(bouncer_cfg) as cb:
+                    yield cb, lapi, data
+        finally:
+            pass
+
+    return closure
+
+
 @pytest.fixture(scope='session')
 def lapi():
     @contextlib.contextmanager
@@ -131,4 +168,16 @@ def lapi():
             yield lapi
         finally:
             lapi.stop()
+    return closure
+
+
+@pytest.fixture(scope='session')
+def bouncer_cfg():
+    return default_config.copy()
+
+
+@pytest.fixture(scope='session')
+def api_key_factory():
+    def closure(alphabet=string.ascii_letters + string.digits):
+        return ''.join(secrets.choice(alphabet) for i in range(32))
     return closure

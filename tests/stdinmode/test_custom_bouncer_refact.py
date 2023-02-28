@@ -10,8 +10,6 @@ from .conftest import default_config
 
 import pytest
 
-LAPI_CONNECT_TIMEOUT = 1
-
 
 def test_no_lapi(bouncer):
     with bouncer() as cb:

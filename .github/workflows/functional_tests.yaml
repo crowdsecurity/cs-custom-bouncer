@@ -11,24 +11,30 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+
     - name: Set up Go 1.19
       uses: actions/setup-go@v3
       with:
         go-version: 1.19
       id: go
+
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
-    - id: cache-pipenv
+
+    - name: Cache virtualenvs
+      id: cache-pipenv
       uses: actions/cache@v3
       with:
         path: ~/.local/share/virtualenvs
         key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+
     - name: Install deps for tests
       run: |
         sudo apt install -y nftables iptables ipset
         python3 -m pip install --upgrade pipenv wheel
+
     - name: Run tests
       run: |
         make build
         pipenv install --deploy
-        pipenv run pytest
+        pipenv run pytest --durations=0 --color=yes
