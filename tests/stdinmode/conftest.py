@@ -5,18 +5,16 @@ Full integration test with a real Crowdsec running in Docker
 import contextlib
 import os
 import subprocess
-import time
 from pathlib import Path
 import psutil
 import secrets
 import string
+import time
 
 import pytest
 import yaml
 
 from pytest_cs import WaiterGenerator
-
-from tests.mock_lapi import MockLAPI
 
 SCRIPT_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
@@ -31,7 +29,7 @@ default_config = {
     'feed_via_stdin': True,
     # number of times to restart binary. relevant if feed_via_stdin=true.
     # Set to -1 for infinite retries.
-    'total_retries': 2,
+    'total_retries': 3,
     # ignore IPs banned for triggering scenarios not containing either
     # of provided words, eg ["ssh", "http"]
     'scenarios_containing': [],
@@ -39,20 +37,17 @@ default_config = {
     # containing either of provided words
     'scenarios_not_containing': [],
     'origins': [],
-    'piddir': '/var/run/',
     'update_frequency': '0.1s',
     'cache_retention_duration': '10s',
     'daemonize': False,
     'log_mode': 'stdout',
     'log_dir': '/var/log/',
-    'log_level': 'debug',
+    'log_level': 'info',
     'api_url': 'http://localhost:8081/',
-    'api_key': '1237adaf7a1724ac68a3288828820a67',
+    'api_key': '',
 
     'prometheus': {
         'enabled': False,
-        'listen_addr': '127.0.0.1',
-        'listen_port': '60602'
     }
 }
 
@@ -155,19 +150,6 @@ def bouncer_with_lapi(bouncer, crowdsec, bouncer_cfg, api_key_factory, tmp_path_
         finally:
             pass
 
-    return closure
-
-
-@pytest.fixture(scope='session')
-def lapi():
-    @contextlib.contextmanager
-    def closure():
-        lapi = MockLAPI()
-        lapi.start()
-        try:
-            yield lapi
-        finally:
-            lapi.stop()
     return closure
 
 

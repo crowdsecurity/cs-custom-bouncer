@@ -4,13 +4,13 @@ go 1.19
 
 require (
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
-	github.com/crowdsecurity/crowdsec v1.4.1
-	github.com/crowdsecurity/go-cs-bouncer v0.0.2
+	github.com/crowdsecurity/crowdsec v1.4.6
+	github.com/crowdsecurity/go-cs-bouncer v0.0.3-0.20230302160125-5325225f5785
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/prometheus/client_golang v1.14.0
 	github.com/sirupsen/logrus v1.9.0
-	golang.org/x/net v0.4.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637
 	gopkg.in/yaml.v2 v2.4.0
