@@ -1,6 +1,6 @@
 module github.com/crowdsecurity/cs-custom-bouncer
 
-go 1.19
+go 1.20
 
 require (
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
@@ -12,7 +12,10 @@ require (
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637
+)
+
+require (
+	golang.org/x/sync v0.1.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -44,5 +47,6 @@ require (
 	github.com/prometheus/procfs v0.8.0 // indirect
 	go.mongodb.org/mongo-driver v1.11.1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

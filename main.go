@@ -18,6 +18,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/writer"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/crowdsecurity/crowdsec/pkg/models"
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/version"
@@ -154,13 +155,12 @@ func main() {
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
 
-	ctx, cancel := context.WithCancel(context.Background())
+	g, ctx := errgroup.WithContext(context.Background())
 
-	go func() {
+	g.Go(func() error {
 		bouncer.Run(ctx)
-		log.Errorf("stream init failed")
-		cancel()
-	}()
+		return fmt.Errorf("stream init failed")
+	})
 
 	if config.PrometheusConfig.Enabled {
 		listenOn := net.JoinHostPort(
@@ -184,9 +184,7 @@ func main() {
 		}()
 	}
 	if config.FeedViaStdin {
-		go func() {
-			defer cancel()
-
+		g.Go(func() error {
 			f := func() error {
 				log.Debugf("Starting binary %s %s", config.BinPath, config.BinArgs)
 				c := exec.CommandContext(ctx, config.BinPath, config.BinArgs...)
@@ -213,11 +211,11 @@ func main() {
 					log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
 				}
 			}
-			log.Error("maximum retries exceeded for binary. Exiting")
-		}()
+			return fmt.Errorf("maximum retries exceeded for binary. Exiting")
+		})
 	}
 
-	go func() {
+	g.Go(func() error {
 		log.Infof("Processing new and deleted decisions . . .")
 		for {
 			select {
@@ -229,15 +227,18 @@ func main() {
 						log.Errorf("unable to shutdown prometheus server: %s", err)
 					}
 				}
-				return
+				return nil
 			case decisions := <-bouncer.Stream:
+				if decisions == nil {
+					continue
+				}
 				deleteDecisions(custom, decisions.Deleted)
 				addDecisions(custom, decisions.New)
 			case <-cacheResetTicker.C:
 				custom.ResetCache()
 			}
 		}
-	}()
+	})
 
 	if config.Daemon {
 		sent, err := daemon.SdNotify(false, "READY=1")
@@ -247,6 +248,7 @@ func main() {
 		go HandleSignals(custom)
 	}
 
-	// Wait for the context to be cancelled
-	<-ctx.Done()
+	if err := g.Wait(); err != nil {
+		log.Fatal(err)
+	}
 }
