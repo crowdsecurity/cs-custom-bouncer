@@ -34,6 +34,7 @@ jobs:
       run: |
         sudo apt install -y nftables iptables ipset
         python3 -m pip install --upgrade pipenv wheel
+        docker network create net-test
 
     - name: Run tests
       run: |
