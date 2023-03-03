@@ -184,7 +184,7 @@ func main() {
 		}()
 	}
 	if config.FeedViaStdin {
-		go func() error {
+		go func() {
 			defer cancel()
 
 			f := func() error {
@@ -214,7 +214,6 @@ func main() {
 				}
 			}
 			log.Error("maximum retries exceeded for binary. Exiting")
-			return err
 		}()
 	}
 
