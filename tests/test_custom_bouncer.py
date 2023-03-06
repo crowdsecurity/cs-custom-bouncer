@@ -1,47 +1,59 @@
-"""
-Full integration test with a real Crowdsec running in Docker
-"""
-
 import json
 import time
 
+from .conftest import cb_binary
 
-def test_no_api_key(crowdsec, bouncer, bouncer_cfg):
-    with bouncer(bouncer_cfg) as cb:
+
+def test_no_custom_binary(crowdsec, bouncer, cb_cfg_factory):
+    cfg = cb_cfg_factory()
+    cfg['bin_path'] = '/does/not/exist'
+    with bouncer(cb_binary, cfg) as cb:
         cb.wait_for_lines_fnmatch([
-            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+            "*unable to load configuration: binary '/does/not/exist' doesn't exist*",
         ])
-        cb.proc.wait(timeout=0.5)
-        assert not cb.proc.is_running()
-
-    bouncer_cfg['api_key'] = ''
-
-    with bouncer(bouncer_cfg) as cb:
-        cb.wait_for_lines_fnmatch([
-            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
-        ])
-        cb.proc.wait(timeout=0.5)
+        cb.proc.wait(timeout=0.2)
         assert not cb.proc.is_running()
 
 
-def test_no_lapi(bouncer, bouncer_cfg):
+def test_no_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
+    cfg = cb_stream_cfg_factory()
+    with bouncer(cb_binary, cfg) as cb:
+        cb.wait_for_lines_fnmatch([
+            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+        ])
+        cb.proc.wait(timeout=0.2)
+        assert not cb.proc.is_running()
+
+    cfg['api_key'] = ''
+
+    with bouncer(cb_binary, cfg) as cb:
+        cb.wait_for_lines_fnmatch([
+            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+        ])
+        cb.proc.wait(timeout=0.2)
+        assert not cb.proc.is_running()
+
+
+def test_no_lapi(bouncer, cb_stream_cfg_factory):
     # The bouncer should exit if it can't connect to the LAPI
-    bouncer_cfg['api_key'] = 'not-used'
-    with bouncer(bouncer_cfg) as cb:
+    cfg = cb_stream_cfg_factory()
+    cfg['api_key'] = 'not-used'
+    with bouncer(cb_binary, cfg) as cb:
         cb.wait_for_lines_fnmatch([
             "*connection refused*",
-            # XXX: "*terminating bouncer process*",
+            "*terminating bouncer process*",
             "*stream init failed*",
         ])
 
 
-def test_bad_api_key(crowdsec, bouncer, bouncer_cfg):
+def test_bad_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
     with crowdsec() as lapi:
         port = lapi.probe.get_bound_port('8080')
-        bouncer_cfg['api_url'] = f'http://localhost:{port}'
-        bouncer_cfg['api_key'] = 'badkey'
+        cfg = cb_stream_cfg_factory()
+        cfg['api_url'] = f'http://localhost:{port}'
+        cfg['api_key'] = 'badkey'
 
-        with bouncer(bouncer_cfg) as cb:
+        with bouncer(cb_binary, cfg) as cb:
             cb.wait_for_lines_fnmatch([
                 "*Using API key auth*",
                 "*Processing new and deleted decisions . . .*",
@@ -52,7 +64,7 @@ def test_bad_api_key(crowdsec, bouncer, bouncer_cfg):
             assert not cb.proc.is_running()
 
 
-def test_good_api_key(crowdsec, bouncer, bouncer_cfg, api_key_factory):
+def test_good_api_key(crowdsec, bouncer, cb_stream_cfg_factory, api_key_factory):
     api_key = api_key_factory()
     env = {
         'BOUNCER_KEY_custom': api_key,
@@ -60,10 +72,11 @@ def test_good_api_key(crowdsec, bouncer, bouncer_cfg, api_key_factory):
     with crowdsec(environment=env) as lapi:
         lapi.wait_for_http(8080, '/health')
         port = lapi.probe.get_bound_port('8080')
-        bouncer_cfg['api_url'] = f'http://localhost:{port}'
-        bouncer_cfg['api_key'] = api_key
+        cfg = cb_stream_cfg_factory()
+        cfg['api_url'] = f'http://localhost:{port}'
+        cfg['api_key'] = api_key
 
-        with bouncer(bouncer_cfg) as cb:
+        with bouncer(cb_binary, cfg) as cb:
             # check that the bouncer is attempting to connect
             cb.wait_for_lines_fnmatch([
                 "*Using API key auth*",
@@ -136,10 +149,10 @@ def test_binary_monitor(bouncer_with_lapi):
             "*Processing new and deleted decisions . . .*",
         ])
         child = cb.wait_for_child()
-        assert child.name() == 'custombinary'
+        assert child.name() == 'custom-stream'
         assert len(cb.children()) == 1
 
-        # Let's kill custombinary and see if it's restarted max_retry times (2)
+        # Let's kill custom-stream and see if it's restarted max_retry times (2)
         cb.halt_children()
         cb.wait_for_child()
         assert len(cb.children()) == 1
