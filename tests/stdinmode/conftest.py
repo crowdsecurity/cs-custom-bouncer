@@ -44,7 +44,7 @@ default_config = {
     'log_dir': '/var/log/',
     'log_level': 'info',
     'api_url': 'http://localhost:8081/',
-    'api_key': '',
+    # 'api_key': '',
 
     'prometheus': {
         'enabled': False,

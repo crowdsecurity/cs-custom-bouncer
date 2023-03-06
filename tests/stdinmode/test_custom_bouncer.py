@@ -7,17 +7,21 @@ import time
 
 
 def test_no_api_key(crowdsec, bouncer, bouncer_cfg):
-    with crowdsec() as lapi:
-        port = lapi.probe.get_bound_port('8080')
-        bouncer_cfg['api_url'] = f'http://localhost:{port}'
-        del bouncer_cfg['api_key']
+    with bouncer(bouncer_cfg) as cb:
+        cb.wait_for_lines_fnmatch([
+            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+        ])
+        cb.proc.wait(timeout=0.5)
+        assert not cb.proc.is_running()
 
-        with bouncer(bouncer_cfg) as cb:
-            cb.wait_for_lines_fnmatch([
-                "*unable to configure bouncer: config does not contain LAPI key or certificate*",
-            ])
-            cb.proc.wait(timeout=0.5)
-            assert not cb.proc.is_running()
+    bouncer_cfg['api_key'] = ''
+
+    with bouncer(bouncer_cfg) as cb:
+        cb.wait_for_lines_fnmatch([
+            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+        ])
+        cb.proc.wait(timeout=0.5)
+        assert not cb.proc.is_running()
 
 
 def test_no_lapi(bouncer, bouncer_cfg):
