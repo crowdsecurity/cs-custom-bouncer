@@ -5,7 +5,6 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 
-
 PREFIX?="/"
 PID_DIR = $(PREFIX)"/var/run/"
 BINARY_NAME=crowdsec-custom-bouncer
@@ -28,7 +27,7 @@ all: clean test build
 static: clean
 	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v -a -tags netgo -ldflags '-w -extldflags "-static"'
 
-build: clean
+build: goversion clean
 	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v
 
 test:
@@ -59,3 +58,5 @@ release: build
 func-tests: build
 	pipenv install --dev
 	pipenv run pytest -v
+
+include mk/goversion.mk
