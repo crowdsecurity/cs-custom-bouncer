@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  install_crowdsec:
-    name: Build
+  functional_tests:
+    name: Build + tests
     runs-on: ubuntu-latest
     steps:
 
@@ -36,6 +36,11 @@ jobs:
         docker network create net-test
 
     - name: Run tests
+      env:
+        CROWDSEC_TEST_VERSION: dev
+        CROWDSEC_TEST_FLAVORS: full
+        CROWDSEC_TEST_NETWORK: net-test
+        CROWDSEC_TEST_TIMEOUT: 60
       run: |
         make build
         pipenv install --deploy
