@@ -1,7 +1,0 @@
-#!/bin/bash 
-rm data.txt > /dev/null
-while read line
-do
-  echo "$line" >> data.txt
-done
-# rm data.txt > /dev/null

@@ -22,6 +22,7 @@ type PrometheusConfig struct {
 
 type bouncerConfig struct {
 	BinPath                    string           `yaml:"bin_path"` // path to binary
+	BinArgs                    []string         `yaml:"bin_args"` // arguments for binary
 	PidDir                     string           `yaml:"piddir"`
 	UpdateFrequency            string           `yaml:"update_frequency"`
 	IncludeScenariosContaining []string         `yaml:"include_scenarios_containing"`
@@ -82,7 +83,7 @@ func newConfig(reader io.Reader) (*bouncerConfig, error) {
 
 	/*Configure logging*/
 	if err := types.SetDefaultLoggerConfig(config.LogMode, config.LogDir, config.LogLevel, config.LogMaxSize, config.LogMaxFiles, config.LogMaxAge, config.CompressLogs, false); err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 	if config.LogMode == "file" {
 		if config.LogDir == "" {

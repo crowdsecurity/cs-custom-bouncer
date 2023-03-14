@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	binaryPath       = "./tests/custombinary"
+	binaryPath       = "./test/custom-live"
 	binaryOutputFile = "./data.txt"
 )
 

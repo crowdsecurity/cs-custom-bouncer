@@ -1,0 +1,6 @@
+#!/bin/sh
+data="data.txt"
+if [ -n "$1" ]; then
+    data="$1"
+fi
+cat -u > "$data"

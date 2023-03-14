@@ -19,10 +19,7 @@ export LD_OPTS=-ldflags "-s -w -X github.com/crowdsecurity/cs-custom-bouncer/pkg
 
 RELDIR = "crowdsec-custom-bouncer-${BUILD_VERSION}"
 
-PYTHON=python3
-PIP=pip
-
-all: clean test build
+all: clean build test
 
 static: clean
 	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v -a -tags netgo -ldflags '-w -extldflags "-static"'
@@ -31,7 +28,7 @@ build: goversion clean
 	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v
 
 test:
-	@$(GOTEST) -v ./...
+	@$(GOTEST) ./...
 
 clean:
 	@rm -f $(BINARY_NAME)
