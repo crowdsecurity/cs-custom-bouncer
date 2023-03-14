@@ -48,6 +48,8 @@ jobs:
         go install github.com/kyoh86/richgo@v0.3.12
         set -o pipefail
         make test | richgo testfilter
+      env:
+        RICHGO_FORCE_COLOR: 1
 
     - name: Cache virtualenvs
       id: cache-pipenv
