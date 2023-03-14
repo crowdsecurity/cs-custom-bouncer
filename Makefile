@@ -27,6 +27,7 @@ static: clean
 build: goversion clean
 	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v
 
+.PHONY: test
 test:
 	@$(GOTEST) ./...
 
