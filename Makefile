@@ -28,7 +28,7 @@ build: goversion clean
 	$(GOBUILD) $(LD_OPTS) -o $(BINARY_NAME) -v
 
 test:
-	@$(GOTEST) -v ./...
+	@$(GOTEST) ./...
 
 clean:
 	@rm -f $(BINARY_NAME)

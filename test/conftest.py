@@ -77,7 +77,7 @@ def cb_stream_cfg_factory(cb_cfg_factory):
     def closure(**kw):
         cfg = {
             'feed_via_stdin': True,
-            'bin_path': 'tests/custom-stream',
+            'bin_path': 'test/custom-stream',
         }
         cfg |= cb_cfg_factory(**kw)
         return cfg
@@ -89,7 +89,7 @@ def bouncer_live_cfg():
     def closure(**kw):
         cfg = {
             'feed_via_stdin': False,
-            'bin_path': 'tests/custom-live',
+            'bin_path': 'test/custom-live',
         }
         cfg |= cb_cfg_factory(**kw)
         return cfg
