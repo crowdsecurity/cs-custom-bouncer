@@ -120,7 +120,7 @@ func newConfig(reader io.Reader) (*bouncerConfig, error) {
 
 	if config.CacheRetentionDuration == 0 {
 		log.Infof("cache_retention_duration defaults to 10 seconds")
-		config.CacheRetentionDuration = time.Duration(10 * time.Second)
+		config.CacheRetentionDuration = 10 * time.Second
 	}
 
 	return config, nil

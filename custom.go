@@ -124,7 +124,7 @@ func serializeDecision(decision *models.Decision, action string) (string, error)
 	d := DecisionWithAction{Decision: *decision, Action: action, ID: decision.ID}
 	serbyte, err := json.Marshal(d)
 	if err != nil {
-		return "", fmt.Errorf("serialize error : %s", err)
+		return "", fmt.Errorf("serialize error : %w", err)
 	}
 	return string(serbyte), nil
 }

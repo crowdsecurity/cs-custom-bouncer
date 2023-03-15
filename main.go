@@ -21,8 +21,9 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/crowdsecurity/crowdsec/pkg/models"
-	"github.com/crowdsecurity/cs-custom-bouncer/pkg/version"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
+
+	"github.com/crowdsecurity/cs-custom-bouncer/pkg/version"
 )
 
 const (
@@ -76,7 +77,6 @@ func deleteDecisions(custom *customBouncer, decisions []*models.Decision) {
 	}
 }
 
-
 func addDecisions(custom *customBouncer, decisions []*models.Decision) {
 	if len(decisions) == 1 {
 		log.Infof("adding 1 decision")
@@ -91,7 +91,6 @@ func addDecisions(custom *customBouncer, decisions []*models.Decision) {
 		log.Debugf("Adding '%s' for '%s'", *d.Value, *d.Duration)
 	}
 }
-
 
 func main() {
 	var err error
