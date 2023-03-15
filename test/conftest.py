@@ -1,12 +1,6 @@
-"""
-Full integration test with a real Crowdsec running in Docker
-"""
-
 import contextlib
 import os
 import pathlib
-import secrets
-import string
 
 import pytest
 
@@ -93,11 +87,4 @@ def bouncer_live_cfg():
         }
         cfg |= cb_cfg_factory(**kw)
         return cfg
-    yield closure
-
-
-@pytest.fixture(scope='session')
-def api_key_factory():
-    def closure(alphabet=string.ascii_letters + string.digits):
-        return ''.join(secrets.choice(alphabet) for i in range(32))
     yield closure
