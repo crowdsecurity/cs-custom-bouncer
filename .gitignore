@@ -1,5 +1,12 @@
+# vscode
+.vscode
+
 # Binaries for programs and plugins
-crowdsec-custom-bouncer
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
 # Test binary, built with `go test -c`
 *.test
@@ -9,3 +16,8 @@ crowdsec-custom-bouncer
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# built binaries
+/crowdsec-custom-bouncer
+/crowdsec-custom-bouncer-*
+/crowdsec-custom-bouncer.tgz

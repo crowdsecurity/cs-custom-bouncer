@@ -1,26 +1,37 @@
 # .github/workflows/build-docker-image.yml
 name: build-binary-package
 
-on: 
+on:
   release:
     types: prereleased
 
+env:
+  PROGRAM_NAME: crowdsec-custom-bouncer
+
 jobs:
-  build-binary-package:
-    name: Build and upload binary package
+  build:
+    name: Build and upload all platforms
     runs-on: ubuntu-latest
+
     steps:
+
     - name: Set up Go 1.20.1
       uses: actions/setup-go@v3
       with:
         go-version: 1.20.1
-    - name: Check out code into the Go module directory
+
+    - name: Check out repository
       uses: actions/checkout@v3
-    - name: Build the binaries
-      run: make release
-    - name: Upload to release
-      uses: JasonEtco/upload-to-release@master
       with:
-        args: crowdsec-custom-bouncer.tgz application/x-gzip
+        fetch-depth: 0
+
+    - name: Build all versions
+      run: |
+        make platform-all
+
+    - name: Upload to release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        tag_name="${GITHUB_REF##*/}"
+        hub release edit $(find . -name "$PROGRAM_NAME*" -maxdepth 1 -printf "-a %p ") -m "" "$tag_name"
