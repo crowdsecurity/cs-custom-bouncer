@@ -89,12 +89,28 @@ func newConfig(reader io.Reader) (*bouncerConfig, error) {
 		if config.LogDir == "" {
 			config.LogDir = "/var/log/"
 		}
+		_maxsize := 500
+		if config.LogMaxSize != 0 {
+			_maxsize = config.LogMaxSize
+		}
+		_maxfiles := 3
+		if config.LogMaxFiles != 0 {
+			_maxfiles = config.LogMaxFiles
+		}
+		_maxage := 30
+		if config.LogMaxAge != 0 {
+			_maxage = config.LogMaxAge
+		}
+		_compress := true
+		if config.CompressLogs != nil {
+			_compress = *config.CompressLogs
+		}
 		LogOutput = &lumberjack.Logger{
 			Filename:   config.LogDir + "/crowdsec-custom-bouncer.log",
-			MaxSize:    500, //megabytes
-			MaxBackups: 3,
-			MaxAge:     28,   //days
-			Compress:   true, //disabled by default
+			MaxSize:    _maxsize,  //megabytes
+			MaxBackups: _maxfiles,
+			MaxAge:     _maxage,   //days
+			Compress:   _compress, //disabled by default
 		}
 		log.SetOutput(LogOutput)
 		log.SetFormatter(&log.TextFormatter{TimestampFormat: "02-01-2006 15:04:05", FullTimestamp: true})
