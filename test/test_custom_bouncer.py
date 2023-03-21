@@ -92,7 +92,7 @@ def test_good_api_key(crowdsec, bouncer, cb_stream_cfg_factory, api_key_factory)
 
             # check that the bouncer can successfully connect
             # and receive decisions
-            time.sleep(0.3)
+            time.sleep(1)
             cb.wait_for_lines_fnmatch([
                 "*adding 0 decisions*",
             ])
@@ -113,7 +113,7 @@ def test_good_api_key_nested_context_managers(bouncer_with_lapi):
         assert len(bouncers) == 1
         assert bouncers[0]['name'] == 'custom'
 
-        time.sleep(0.3)
+        time.sleep(1)
         cb.wait_for_lines_fnmatch([
             "*adding 0 decisions*",
         ])
@@ -136,7 +136,7 @@ def test_api_key_with_dollar(bouncer_with_lapi):
             "*Processing new and deleted decisions . . .*",
         ])
 
-        time.sleep(0.3)
+        time.sleep(1)
         cb.wait_for_lines_fnmatch([
             "*adding 0 decisions*",
         ])
@@ -189,7 +189,7 @@ def test_add_decisions(bouncer_with_lapi):
             res = lapi.cont.exec_run(f'cscli decisions add -i 1.2.3.{i}')
             assert res.exit_code == 0
 
-        time.sleep(0.5)
+        time.sleep(1)
 
         with open(data) as f:
             lines = f.readlines()
@@ -226,7 +226,7 @@ def test_bin_args(bouncer_with_lapi, tmp_path_factory):
             res = lapi.cont.exec_run(f'cscli decisions add -i 1.2.3.{i}')
             assert res.exit_code == 0
 
-        time.sleep(0.5)
+        time.sleep(1)
 
         with open(data) as f:
             lines = f.readlines()
@@ -245,7 +245,7 @@ def test_cache_retention(bouncer_with_lapi):
         for i in range(1, 3):
             res = lapi.cont.exec_run(f'cscli decisions add -i 1.2.3.{i}')
             assert res.exit_code == 0
-        time.sleep(.5)
+        time.sleep(1)
         with open(data) as f:
             lines = f.readlines()
         assert len(lines) == 2
@@ -260,11 +260,11 @@ def test_delete_decisions(bouncer_with_lapi):
         for i in range(1, 6):
             res = lapi.cont.exec_run(f'cscli decisions add -i 1.2.3.{i}')
             assert res.exit_code == 0
-        time.sleep(0.5)
+        time.sleep(1)
         for i in range(1, 6):
             res = lapi.cont.exec_run(f'cscli decisions delete --ip 1.2.3.{i}')
             assert res.exit_code == 0
-        time.sleep(0.5)
+        time.sleep(1)
         with open(data) as f:
             lines = f.readlines()
         assert len(lines) == 10
