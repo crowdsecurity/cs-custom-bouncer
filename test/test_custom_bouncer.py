@@ -81,6 +81,8 @@ def test_good_api_key(crowdsec, bouncer, cb_stream_cfg_factory, api_key_factory)
             cb.wait_for_lines_fnmatch([
                 "*Using API key auth*",
                 "*Processing new and deleted decisions . . .*",
+                "*deleting 0 decisions*",
+                "*adding 0 decisions*",
             ])
 
             # check that the bouncer is registered
@@ -105,6 +107,8 @@ def test_good_api_key_nested_context_managers(bouncer_with_lapi):
         cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
+            "*deleting 0 decisions*",
+            "*adding 0 decisions*",
         ])
 
         res = lapi.cont.exec_run('cscli bouncers list -o json')
@@ -112,11 +116,6 @@ def test_good_api_key_nested_context_managers(bouncer_with_lapi):
         bouncers = json.loads(res.output)
         assert len(bouncers) == 1
         assert bouncers[0]['name'] == 'custom'
-
-        time.sleep(1)
-        cb.wait_for_lines_fnmatch([
-            "*adding 0 decisions*",
-        ])
 
 
 def test_api_key_with_dollar(bouncer_with_lapi):
@@ -134,10 +133,7 @@ def test_api_key_with_dollar(bouncer_with_lapi):
         cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
-        ])
-
-        time.sleep(1)
-        cb.wait_for_lines_fnmatch([
+            "*deleting 0 decisions*",
             "*adding 0 decisions*",
         ])
 
@@ -147,6 +143,8 @@ def test_binary_monitor(bouncer_with_lapi):
         cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
+            "*deleting 0 decisions*",
+            "*adding 0 decisions*",
         ])
         child = cb.wait_for_child()
         assert child.name() == 'custom-stream'
@@ -183,6 +181,8 @@ def test_add_decisions(bouncer_with_lapi):
         cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
+            "*deleting 0 decisions*",
+            "*adding 0 decisions*",
         ])
 
         for i in range(1, 6):
@@ -220,6 +220,8 @@ def test_bin_args(bouncer_with_lapi, tmp_path_factory):
         cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
+            "*deleting 0 decisions*",
+            "*adding 0 decisions*",
         ])
 
         for i in range(1, 6):
@@ -238,6 +240,8 @@ def test_cache_retention(bouncer_with_lapi):
         cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
+            "*deleting 0 decisions*",
+            "*adding 0 decisions*",
         ])
         for i in range(1, 3):
             res = lapi.cont.exec_run(f'cscli decisions add -i 1.2.3.{i}')
@@ -256,6 +260,8 @@ def test_delete_decisions(bouncer_with_lapi):
         cb.wait_for_lines_fnmatch([
             "*Using API key auth*",
             "*Processing new and deleted decisions . . .*",
+            "*deleting 0 decisions*",
+            "*adding 0 decisions*",
         ])
         for i in range(1, 6):
             res = lapi.cont.exec_run(f'cscli decisions add -i 1.2.3.{i}')
