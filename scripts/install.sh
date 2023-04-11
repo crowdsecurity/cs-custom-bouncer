@@ -81,7 +81,7 @@ while true; do
   esac
 done
 
-if [ -z "$BINARY_PATH" ]; then
+if [ -z "${BINARY_PATH+}" ]; then
     echo "Path to your custom binary:"
     read -r BINARY_PATH
     # XXX TODO check if path is valid
