@@ -74,9 +74,9 @@ assert_root() {
     fi
 }
 
-# check if the configuration file contains a
-# variable which has not yet been interpolated, like "$API_KEY",
-# and returns true if it does.
+# Check if the configuration file contains a variable
+# which has not yet been interpolated, like "$API_KEY",
+# and return true if it does.
 config_not_set() {
     require 'CONFIG'
     local varname before after

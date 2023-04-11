@@ -82,7 +82,7 @@ while true; do
 done
 
 if [ -z "${BINARY_PATH+}" ]; then
-    echo "Path to your custom binary:"
+    printf '%s' "Path to your custom binary: "
     read -r BINARY_PATH
     # XXX TODO check if path is valid
 fi
