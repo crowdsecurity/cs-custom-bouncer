@@ -62,7 +62,7 @@ if [ "$1" = "1" ]; then
     fi
 fi
 
-%systemd_post crowdsec-blocklist-mirror.service
+%systemd_post crowdsec-custom-bouncer.service
 
 
 if [ "$START" -eq 0 ]; then

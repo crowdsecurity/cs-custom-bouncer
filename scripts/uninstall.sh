@@ -2,7 +2,7 @@
 
 set -eu
 
-BOUNCER="crowdsec-blocklist-mirror"
+BOUNCER="crowdsec-custom-bouncer"
 
 . ./scripts/_bouncer.sh
 
