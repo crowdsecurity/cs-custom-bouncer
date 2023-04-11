@@ -162,7 +162,7 @@ def test_binary_monitor(bouncer_with_lapi):
         cb.wait_for_child()
         assert len(cb.children()) == 1
         cb.wait_for_lines_fnmatch([
-            "*Binary exited (retry 1/3): signal: killed*",
+            "*Binary exited (retry 2/3): signal: killed*",
         ])
 
         # This will exceed max_retry and the bouncer will stop
@@ -171,7 +171,7 @@ def test_binary_monitor(bouncer_with_lapi):
         cb.proc.wait(timeout=0.5)
         assert not cb.proc.is_running()
         cb.wait_for_lines_fnmatch([
-            "*Binary exited (retry 1/3): signal: killed*",
+            "*Binary exited (retry 3/3): signal: killed*",
             "*maximum retries exceeded for binary. Exiting*"
         ])
 

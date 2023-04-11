@@ -1,11 +1,10 @@
 Source: crowdsec-custom-bouncer
 Maintainer: Crowdsec Team <debian@crowdsec.net>
-Build-Depends: debhelper, bash
+Build-Depends: debhelper
 
 Package: crowdsec-custom-bouncer
 Provides: crowdsec-custom-bouncer
 Description: Custom bouncer for Crowdsec
 Architecture: any
-
-
-
+Section: admin
+Priority: optional

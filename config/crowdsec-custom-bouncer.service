@@ -2,13 +2,11 @@
 Description=The custom bouncer for CrowdSec
 After=syslog.target network.target remote-fs.target nss-lookup.target crowdsec.service
 
-
 [Service]
 Type=notify
 ExecStart=${BIN} -c ${CFG}/crowdsec-custom-bouncer.yaml
+ExecStartPre=${BIN} -c ${CFG}/crowdsec-custom-bouncer.yaml -t
 ExecStartPost=/bin/sleep 0.1
 
 [Install]
 WantedBy=multi-user.target
-
-
