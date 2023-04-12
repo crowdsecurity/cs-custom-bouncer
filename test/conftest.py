@@ -7,6 +7,15 @@ import pytest
 SCRIPT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)))
 PROJECT_ROOT = SCRIPT_DIR.parent
 cb_binary = PROJECT_ROOT.joinpath("crowdsec-custom-bouncer")
+bouncer_binary = cb_binary
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_sessionstart(session):
+    if not bouncer_binary.exists() or not os.access(bouncer_binary, os.X_OK):
+        raise RuntimeError(f"Bouncer binary not found at {bouncer_binary}. Did you build it?")
+
+    yield
 
 
 # Create a lapi container, registers a bouncer

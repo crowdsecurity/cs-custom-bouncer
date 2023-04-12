@@ -1,38 +1,28 @@
+#!/bin/sh
 
 systemctl daemon-reload
 
+BOUNCER="crowdsec-custom-bouncer"
+BOUNCER_PREFIX="CustomBouncer"
 
-START=0
+#shellcheck source=./scripts/_bouncer.sh
+. "/usr/lib/$DPKG_MAINTSCRIPT_PACKAGE/_bouncer.sh"
+START=1
 
-if [ "$1" = "configure" ] && [ "$2" = "" ]; then
-
-    type cscli
-
-    if [ "$?" -eq "0" ] ; then
-        START=1
-        echo "cscli/crowdsec is present, generating API key"
-        unique=`date +%s`
-        API_KEY=`cscli -oraw bouncers add CustomBouncer-${unique}`
-        if [ $? -eq 1 ] ; then
-            echo "failed to create API token, service won't be started."
+if [ "$1" = "configure" ]; then
+    if need_api_key; then
+        if ! set_api_key; then
             START=0
-            API_KEY="<API_KEY>"
-        else
-            echo "API Key : ${API_KEY}"
         fi
-
-        TMP=`mktemp -p /tmp/`
-        cp /etc/crowdsec/bouncers/crowdsec-custom-bouncer.yaml ${TMP}
-        API_KEY=${API_KEY} envsubst < ${TMP} > /etc/crowdsec/bouncers/crowdsec-custom-bouncer.yaml
-        rm ${TMP}
     fi
-else
-    START=1
 fi
 
+systemctl --quiet is-enabled "$SERVICE" || systemctl unmask "$SERVICE" && systemctl enable "$SERVICE"
 
-if [ ${START} -eq 0 ] ; then
-    echo "no api key was generated"
+set_local_lapi_url 'CROWDSEC_LAPI_URL'
+
+if [ "$START" -eq 0 ]; then
+    echo "no api key was generated, you can generate one on your LAPI server by running 'cscli bouncers add <bouncer_name>' and add it to '$CONFIG'" >&2
 fi
 
-echo "please enter the binary path in '/etc/crowdsec/bouncers/crowdsec-custom-bouncer.yaml' and start the bouncer via 'sudo systemctl start crowdsec-custom-bouncer' "
+echo "please enter the binary path in '$CONFIG' and start the bouncer via 'sudo systemctl start $SERVICE'"
