@@ -146,20 +146,20 @@ def test_binary_monitor(bouncer_with_lapi):
             "*deleting 0 decisions*",
             "*adding 0 decisions*",
         ])
-        child = cb.wait_for_child()
+        child = cb.wait_for_child(timeout=2)
         assert child.name() == 'custom-stream'
         assert len(cb.children()) == 1
 
         # Let's kill custom-stream and see if it's restarted max_retry times (2)
         cb.halt_children()
-        cb.wait_for_child()
+        cb.wait_for_child(timeout=2)
         assert len(cb.children()) == 1
         cb.wait_for_lines_fnmatch([
             "*Binary exited (retry 1/3): signal: killed*",
         ])
 
         cb.halt_children()
-        cb.wait_for_child()
+        cb.wait_for_child(timeout=2)
         assert len(cb.children()) == 1
         cb.wait_for_lines_fnmatch([
             "*Binary exited (retry 2/3): signal: killed*",
