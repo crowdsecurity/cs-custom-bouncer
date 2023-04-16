@@ -16,7 +16,6 @@ override_dh_auto_install:
 
 	BOUNCER=crowdsec-custom-bouncer; \
 	PKG="$$BOUNCER"; \
-	mkdir -p "debian/$$PKG/var/lib/crowdsec/$$BOUNCER/cache/"; \
 	install -D "$$BOUNCER" -t "debian/$$PKG/usr/bin/"; \
 	install -D "scripts/_bouncer.sh" -t "debian/$$PKG/usr/lib/$$PKG/"; \
 	install -D "config/$$BOUNCER.yaml" "debian/$$PKG/etc/crowdsec/bouncers/$$BOUNCER.yaml"; \

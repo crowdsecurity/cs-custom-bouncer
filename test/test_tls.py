@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from .conftest import cb_binary
-
 # import random
 #
 # from pytest_cs import Status
@@ -41,7 +39,7 @@ def test_tls_server(crowdsec, certs_dir, api_key_factory, bouncer, cb_stream_cfg
         cfg['api_url'] = f'https://localhost:{port}'
         cfg['api_key'] = api_key
 
-        with bouncer(cb_binary, cfg) as cb:
+        with bouncer(cfg) as cb:
             cb.wait_for_lines_fnmatch([
                 "*Using API key auth*",
                 "*Processing new and deleted decisions . . .*",
@@ -51,7 +49,7 @@ def test_tls_server(crowdsec, certs_dir, api_key_factory, bouncer, cb_stream_cfg
 
         cfg['ca_cert_path'] = (certs / 'ca.crt').as_posix()
 
-        with bouncer(cb_binary, cfg) as cb:
+        with bouncer(cfg) as cb:
             cb.wait_for_lines_fnmatch([
                 "*Using API key auth*",
                 "*Processing new and deleted decisions . . .*",
@@ -89,7 +87,7 @@ def test_tls_mutual(crowdsec, certs_dir, api_key_factory, bouncer, cb_stream_cfg
         cfg['key_path'] = (certs / 'bouncer.key').as_posix()
         cfg['ca_cert_path'] = (certs / 'ca.crt').as_posix()
 
-        with bouncer(cb_binary, cfg) as cb:
+        with bouncer(cfg) as cb:
             cb.wait_for_lines_fnmatch([
                 "*Processing new and deleted decisions . . .*",
                 "*deleting 0 decisions*",
