@@ -1,14 +1,6 @@
+
 import contextlib
 import pytest
-
-
-def pytest_configure(config):
-    config.addinivalue_line(
-        'markers', 'deb: tests for build/install/configure a debian packages'
-    )
-    config.addinivalue_line(
-        'markers', 'rpm: tests for build/install/configure rpm packages'
-    )
 
 
 # provide the name of the bouncer binary to test
