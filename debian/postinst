@@ -2,9 +2,6 @@
 
 systemctl daemon-reload
 
-BOUNCER="crowdsec-custom-bouncer"
-BOUNCER_PREFIX="CustomBouncer"
-
 #shellcheck source=./scripts/_bouncer.sh
 . "/usr/lib/$DPKG_MAINTSCRIPT_PACKAGE/_bouncer.sh"
 START=1

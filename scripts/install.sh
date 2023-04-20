@@ -2,9 +2,6 @@
 
 set -eu
 
-BOUNCER="crowdsec-custom-bouncer"
-BOUNCER_PREFIX="crowdsec-custom-bouncer"
-
 . ./scripts/_bouncer.sh
 
 assert_root
