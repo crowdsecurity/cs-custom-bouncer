@@ -17,9 +17,9 @@ def test_install_no_crowdsec(project_repo, bouncer_binary, must_be_root):
         cwd=project_repo
     )
 
-    c.expect(f"Installing {BOUNCER}")
     c.expect("Path to your custom binary:")
     c.sendline('/tmp/foo')
+    c.expect(f"Installing {BOUNCER}")
     c.expect("WARN.* cscli not found, you will need to generate an api key.")
     c.expect(f"WARN.* service not started. You need to get an API key and configure it in {CONFIG}")
     c.expect(f"The {BOUNCER} service has been installed.")
@@ -30,7 +30,7 @@ def test_install_no_crowdsec(project_repo, bouncer_binary, must_be_root):
     with open(CONFIG) as f:
         y = yaml.safe_load(f)
         assert y['api_key'] == '<API_KEY>'
-        assert y['binary_path'] == '/tmp/foo'
+        assert y['bin_path'] == '/tmp/foo'
 
     assert os.path.exists(CONFIG)
     assert os.stat(CONFIG).st_mode & 0o777 == 0o600
