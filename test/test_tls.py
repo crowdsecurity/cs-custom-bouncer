@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-
-# import random
-#
-# from pytest_cs import Status
-#
-# import pytest
-#
-# pytestmark = pytest.mark.docker
-
 
 def test_tls_server(crowdsec, certs_dir, api_key_factory, bouncer, cb_stream_cfg_factory):
     """TLS with server-only certificate"""
