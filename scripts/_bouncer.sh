@@ -4,7 +4,7 @@
 set -eu
 
 BOUNCER="crowdsec-custom-bouncer"
-BOUNCER_PREFIX="cs-custom-bouncer"
+BOUNCER_PREFIX=$(echo "$BOUNCER" | sed 's/crowdsec-/cs-/g')
 
 # This is a library of functions that can be sourced by other scripts
 # to install and configure bouncers.
