@@ -1,6 +1,26 @@
 import contextlib
+import os
+import subprocess
 
 import pytest
+
+
+def systemd_debug(service=None):
+    if service is None:
+        print("No service name provided, can't show journal output")
+        return
+    print('--- systemctl status ---')
+    print(subprocess.check_output(['sudo', 'systemctl', 'status', service]).decode())
+    print('--- journalctl -xeu ---')
+    print(subprocess.check_output(['sudo', 'journalctl', '-xeu', service]).decode())
+
+
+def pytest_exception_interact(node, call, report):
+    if report.failed and os.environ.get('CI') == 'true':
+        # no hope to debug by hand, so let's dump some information
+        for m in node.iter_markers():
+            if m.name == 'systemd_debug':
+                systemd_debug(*m.args, **m.kwargs)
 
 
 # provide the name of the bouncer binary to test
