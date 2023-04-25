@@ -11,22 +11,27 @@ CONFIG = f"/etc/crowdsec/bouncers/{BOUNCER}.yaml"
 
 
 @pytest.mark.dependency()
-def test_install_crowdsec(project_repo, bouncer_binary, must_be_root):
+def test_install_crowdsec(project_repo, bouncer_binary, tmp_path, must_be_root):
     c = pexpect.spawn(
         '/usr/bin/sh', ['scripts/install.sh'],
         encoding='utf-8',
         cwd=project_repo
     )
 
+    # the systemd unit will verify that the file exists (with -t)
+    foo = tmp_path / 'foo'
+    foo.touch()
+
+    c.expect("Path to your custom binary:")
+    c.sendline(foo.as_posix())
     c.expect(f"Installing {BOUNCER}")
     c.expect("cscli found, generating bouncer api key.")
     c.expect("API Key: (.*)")
     api_key = text.nocolor(c.match.group(1).strip())
-    # XXX: what do we expect here ?
+    c.expect(f"The {BOUNCER} service has been installed.")
     c.wait()
     assert c.terminated
-    # XXX: partial configuration, the service won't start
-    # assert c.exitstatus == 0
+    assert c.exitstatus == 0
 
     # installed files
     assert os.path.exists(CONFIG)
@@ -38,6 +43,7 @@ def test_install_crowdsec(project_repo, bouncer_binary, must_be_root):
     with open(CONFIG) as f:
         y = yaml.safe_load(f)
         assert y['api_key'] == api_key
+        assert y['bin_path'] == foo.as_posix()
 
     # the bouncer is registered
     with open(f"{CONFIG}.id") as f:
