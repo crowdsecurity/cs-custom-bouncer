@@ -10,9 +10,24 @@ def systemd_debug(service=None):
         print("No service name provided, can't show journal output")
         return
     print('--- systemctl status ---')
-    print(subprocess.check_output(['sudo', 'systemctl', 'status', service]).decode())
+    p = subprocess.Popen(['systemctl', 'status', service], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode != 0:
+        print('systemctl status failed with code %d' % p.returncode)
+    print('stdout:')
+    print(stdout.decode())
+    print('stderr:')
+    print(stderr.decode())
     print('--- journalctl -xeu ---')
-    print(subprocess.check_output(['sudo', 'journalctl', '-xeu', service]).decode())
+    print(subprocess.check_output(['journalctl', '-xeu', service]).decode())
+    p = subprocess.Popen(['journalctl', '-xeu', service], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode != 0:
+        print('journalctl -xeu failed with code %d' % p.returncode)
+    print('stdout:')
+    print(stdout.decode())
+    print('stderr:')
+    print(stderr.decode())
 
 
 def pytest_exception_interact(node, call, report):
