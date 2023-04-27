@@ -22,4 +22,4 @@ api_key: ${API_KEY}
 prometheus:
   enabled: true
   listen_addr: 127.0.0.1
-  listen_port: 60602 
+  listen_port: 60602
