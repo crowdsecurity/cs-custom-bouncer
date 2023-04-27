@@ -2,9 +2,6 @@
 
 set -eu
 
-BOUNCER="crowdsec-custom-bouncer"
-BOUNCER_PREFIX="crowdsec-custom-bouncer"
-
 . ./scripts/_bouncer.sh
 
 assert_root
@@ -35,14 +32,6 @@ gen_config_file() {
 }
 
 install_bouncer() {
-    if [ ! -f "$BIN_PATH" ]; then
-        msg err "$BIN_PATH not found, exiting."
-        exit 1
-    fi
-    if [ -e "$BIN_PATH_INSTALLED" ]; then
-        msg warn "$BIN_PATH_INSTALLED is already installed. Exiting"
-        exit 1
-    fi
     msg info "Installing $BOUNCER"
     install -v -m 0755 -D "$BIN_PATH" "$BIN_PATH_INSTALLED"
     install -D -m 0600 "./config/$CONFIG_FILE" "$CONFIG"
@@ -80,6 +69,16 @@ while true; do
     *) break;;
   esac
 done
+
+if [ ! -f "$BIN_PATH" ]; then
+    msg err "$BIN_PATH not found, exiting."
+    exit 1
+fi
+
+if [ -e "$BIN_PATH_INSTALLED" ]; then
+    msg err "$BIN_PATH_INSTALLED is already installed. Exiting"
+    exit 1
+fi
 
 if [ -z "${BINARY_PATH+}" ]; then
     printf '%s' "Path to your custom binary: "

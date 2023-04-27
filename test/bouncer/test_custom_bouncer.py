@@ -1,13 +1,11 @@
 import json
 import time
 
-from .conftest import cb_binary
-
 
 def test_no_custom_binary(crowdsec, bouncer, cb_cfg_factory):
     cfg = cb_cfg_factory()
     cfg['bin_path'] = '/does/not/exist'
-    with bouncer(cb_binary, cfg) as cb:
+    with bouncer(cfg) as cb:
         cb.wait_for_lines_fnmatch([
             "*unable to load configuration: binary '/does/not/exist' doesn't exist*",
         ])
@@ -17,7 +15,7 @@ def test_no_custom_binary(crowdsec, bouncer, cb_cfg_factory):
 
 def test_no_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
     cfg = cb_stream_cfg_factory()
-    with bouncer(cb_binary, cfg) as cb:
+    with bouncer(cfg) as cb:
         cb.wait_for_lines_fnmatch([
             "*unable to configure bouncer: config does not contain LAPI key or certificate*",
         ])
@@ -26,7 +24,7 @@ def test_no_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
 
     cfg['api_key'] = ''
 
-    with bouncer(cb_binary, cfg) as cb:
+    with bouncer(cfg) as cb:
         cb.wait_for_lines_fnmatch([
             "*unable to configure bouncer: config does not contain LAPI key or certificate*",
         ])
@@ -38,7 +36,7 @@ def test_no_lapi(bouncer, cb_stream_cfg_factory):
     # The bouncer should exit if it can't connect to the LAPI
     cfg = cb_stream_cfg_factory()
     cfg['api_key'] = 'not-used'
-    with bouncer(cb_binary, cfg) as cb:
+    with bouncer(cfg) as cb:
         cb.wait_for_lines_fnmatch([
             "*connection refused*",
             "*terminating bouncer process*",
@@ -53,7 +51,7 @@ def test_bad_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
         cfg['api_url'] = f'http://localhost:{port}'
         cfg['api_key'] = 'badkey'
 
-        with bouncer(cb_binary, cfg) as cb:
+        with bouncer(cfg) as cb:
             cb.wait_for_lines_fnmatch([
                 "*Using API key auth*",
                 "*Processing new and deleted decisions . . .*",
@@ -76,7 +74,7 @@ def test_good_api_key(crowdsec, bouncer, cb_stream_cfg_factory, api_key_factory)
         cfg['api_url'] = f'http://localhost:{port}'
         cfg['api_key'] = api_key
 
-        with bouncer(cb_binary, cfg) as cb:
+        with bouncer(cfg) as cb:
             # check that the bouncer is attempting to connect
             cb.wait_for_lines_fnmatch([
                 "*Using API key auth*",
