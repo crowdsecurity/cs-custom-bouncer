@@ -1,4 +1,4 @@
-package main
+package custom
 
 import (
 	"encoding/json"
@@ -11,6 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/crowdsecurity/crowdsec/pkg/models"
+
+	"github.com/crowdsecurity/cs-custom-bouncer/pkg/cfg"
 )
 
 type DecisionKey struct {
@@ -24,22 +26,22 @@ type DecisionWithAction struct {
 	Action string `json:"action,omitempty"`
 }
 
-type customBouncer struct {
+type CustomBouncer struct {
 	path                    string
-	binaryStdin             io.Writer
+	BinaryStdin             io.Writer
 	feedViaStdin            bool
 	newDecisionValueSet     map[DecisionKey]struct{}
 	expiredDecisionValueSet map[DecisionKey]struct{}
 }
 
-func newCustomBouncer(cfg *bouncerConfig) (*customBouncer, error) {
-	return &customBouncer{
+func NewCustomBouncer(cfg *cfg.BouncerConfig) (*CustomBouncer, error) {
+	return &CustomBouncer{
 		path:         cfg.BinPath,
 		feedViaStdin: cfg.FeedViaStdin,
 	}, nil
 }
 
-func (c *customBouncer) ResetCache() {
+func (c *CustomBouncer) ResetCache() {
 	cachedDecisionCount := len(c.newDecisionValueSet) + len(c.expiredDecisionValueSet)
 	if cachedDecisionCount != 0 {
 		log.Debugf("resetting cache, clearing %d decisions", cachedDecisionCount)
@@ -49,12 +51,12 @@ func (c *customBouncer) ResetCache() {
 	c.expiredDecisionValueSet = make(map[DecisionKey]struct{})
 }
 
-func (c *customBouncer) Init() error {
+func (c *CustomBouncer) Init() error {
 	c.ResetCache()
 	return nil
 }
 
-func (c *customBouncer) Add(decision *models.Decision) error {
+func (c *CustomBouncer) Add(decision *models.Decision) error {
 	if _, exists := c.newDecisionValueSet[decisionToDecisionKey(decision)]; exists {
 		return nil
 	}
@@ -73,7 +75,7 @@ func (c *customBouncer) Add(decision *models.Decision) error {
 		log.Warningf("serialize: %s", err)
 	}
 	if c.feedViaStdin {
-		fmt.Fprintln(c.binaryStdin, str)
+		fmt.Fprintln(c.BinaryStdin, str)
 		c.newDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 		return nil
 	}
@@ -85,7 +87,7 @@ func (c *customBouncer) Add(decision *models.Decision) error {
 	return nil
 }
 
-func (c *customBouncer) Delete(decision *models.Decision) error {
+func (c *CustomBouncer) Delete(decision *models.Decision) error {
 	if _, exists := c.expiredDecisionValueSet[decisionToDecisionKey(decision)]; exists {
 		return nil
 	}
@@ -100,7 +102,7 @@ func (c *customBouncer) Delete(decision *models.Decision) error {
 		str, err = serializeDecision(decision, "")
 	}
 	if c.feedViaStdin {
-		fmt.Fprintln(c.binaryStdin, str)
+		fmt.Fprintln(c.BinaryStdin, str)
 		c.expiredDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 		return nil
 	}
@@ -116,7 +118,7 @@ func (c *customBouncer) Delete(decision *models.Decision) error {
 	return nil
 }
 
-func (c *customBouncer) ShutDown() error {
+func (c *CustomBouncer) ShutDown() error {
 	return nil
 }
 

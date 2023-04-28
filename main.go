@@ -23,6 +23,8 @@ import (
 	"github.com/crowdsecurity/crowdsec/pkg/models"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
 
+	"github.com/crowdsecurity/cs-custom-bouncer/pkg/cfg"
+	"github.com/crowdsecurity/cs-custom-bouncer/pkg/custom"
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/version"
 )
 
@@ -30,14 +32,14 @@ const (
 	name = "crowdsec-custom-bouncer"
 )
 
-func termHandler(sig os.Signal, custom *customBouncer) error {
+func termHandler(sig os.Signal, custom *custom.CustomBouncer) error {
 	if err := custom.ShutDown(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func HandleSignals(custom *customBouncer) {
+func HandleSignals(custom *custom.CustomBouncer) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan,
 		syscall.SIGTERM, syscall.SIGINT)
@@ -62,7 +64,7 @@ func HandleSignals(custom *customBouncer) {
 	os.Exit(code)
 }
 
-func deleteDecisions(custom *customBouncer, decisions []*models.Decision) {
+func deleteDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
 	if len(decisions) == 1 {
 		log.Infof("deleting 1 decision")
 	} else {
@@ -77,7 +79,7 @@ func deleteDecisions(custom *customBouncer, decisions []*models.Decision) {
 	}
 }
 
-func addDecisions(custom *customBouncer, decisions []*models.Decision) {
+func addDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
 	if len(decisions) == 1 {
 		log.Infof("adding 1 decision")
 	} else {
@@ -119,12 +121,12 @@ func main() {
 		},
 	})
 
-	configBytes, err := mergedConfig(*configPath)
+	configBytes, err := cfg.MergedConfig(*configPath)
 	if err != nil {
 		log.Fatalf("unable to read config file: %s", err)
 	}
 
-	config, err := newConfig(bytes.NewReader(configBytes))
+	config, err := cfg.NewConfig(bytes.NewReader(configBytes))
 	if err != nil {
 		log.Fatalf("unable to load configuration: %s", err)
 	}
@@ -133,7 +135,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	custom, err := newCustomBouncer(config)
+	custom, err := custom.NewCustomBouncer(config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -197,7 +199,7 @@ func main() {
 				if err != nil {
 					return err
 				}
-				custom.binaryStdin = s
+				custom.BinaryStdin = s
 				if err := c.Start(); err != nil {
 					return err
 				}

@@ -1,4 +1,4 @@
-package main
+package custom
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	binaryPath       = "./test/custom-live"
+	binaryPath       = "./testdata/custom-live"
 	binaryOutputFile = "./data.txt"
 )
 
@@ -65,7 +65,7 @@ func cleanup() {
 	os.Remove(binaryOutputFile)
 }
 
-func Test_customBouncer_Add(t *testing.T) {
+func Test_CustomBouncer_Add(t *testing.T) {
 	type args struct {
 		Decisions []*models.Decision
 	}
@@ -159,7 +159,7 @@ func Test_customBouncer_Add(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			defer cleanup()
-			c := &customBouncer{
+			c := &CustomBouncer{
 				path: binaryPath,
 			}
 			c.ResetCache()
@@ -178,7 +178,7 @@ func Test_customBouncer_Add(t *testing.T) {
 	}
 }
 
-func Test_customBouncer_Delete(t *testing.T) {
+func Test_CustomBouncer_Delete(t *testing.T) {
 	type args struct {
 		Decisions []*models.Decision
 	}
@@ -272,7 +272,7 @@ func Test_customBouncer_Delete(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			defer cleanup()
-			c := &customBouncer{
+			c := &CustomBouncer{
 				path: binaryPath,
 			}
 			c.ResetCache()
