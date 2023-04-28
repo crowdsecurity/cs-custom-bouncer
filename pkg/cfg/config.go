@@ -1,4 +1,4 @@
-package main
+package cfg
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ type PrometheusConfig struct {
 	ListenPort    string `yaml:"listen_port"`
 }
 
-type bouncerConfig struct {
+type BouncerConfig struct {
 	BinPath                    string           `yaml:"bin_path"` // path to binary
 	BinArgs                    []string         `yaml:"bin_args"` // arguments for binary
 	PidDir                     string           `yaml:"piddir"`
@@ -44,8 +44,8 @@ type bouncerConfig struct {
 	PrometheusConfig           PrometheusConfig `yaml:"prometheus"`
 }
 
-// mergedConfig() returns the byte content of the patched configuration file (with .yaml.local).
-func mergedConfig(configPath string) ([]byte, error) {
+// MergedConfig() returns the byte content of the patched configuration file (with .yaml.local).
+func MergedConfig(configPath string) ([]byte, error) {
 	patcher := yamlpatch.NewPatcher(configPath, ".local")
 	data, err := patcher.MergedPatchContent()
 	if err != nil {
@@ -54,26 +54,26 @@ func mergedConfig(configPath string) ([]byte, error) {
 	return data, nil
 }
 
-func newConfig(reader io.Reader) (*bouncerConfig, error) {
+func NewConfig(reader io.Reader) (*BouncerConfig, error) {
 	var LogOutput *lumberjack.Logger //io.Writer
 
-	config := &bouncerConfig{}
+	config := &BouncerConfig{}
 
 	fcontent, err := io.ReadAll(reader)
 	if err != nil {
-		return &bouncerConfig{}, err
+		return &BouncerConfig{}, err
 	}
 
 	err = yaml.Unmarshal(fcontent, &config)
 	if err != nil {
-		return &bouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
+		return &BouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
 	if config.BinPath == "" {
-		return &bouncerConfig{}, fmt.Errorf("bin_path is not set")
+		return &BouncerConfig{}, fmt.Errorf("bin_path is not set")
 	}
 	if config.LogMode == "" {
-		return &bouncerConfig{}, fmt.Errorf("log_mode is not net")
+		return &BouncerConfig{}, fmt.Errorf("log_mode is not net")
 	}
 
 	_, err = os.Stat(config.BinPath)
@@ -107,7 +107,7 @@ func newConfig(reader io.Reader) (*bouncerConfig, error) {
 		}
 		LogOutput = &lumberjack.Logger{
 			Filename:   config.LogDir + "/crowdsec-custom-bouncer.log",
-			MaxSize:    _maxsize,  //megabytes
+			MaxSize:    _maxsize, //megabytes
 			MaxBackups: _maxfiles,
 			MaxAge:     _maxage,   //days
 			Compress:   _compress, //disabled by default
@@ -115,7 +115,7 @@ func newConfig(reader io.Reader) (*bouncerConfig, error) {
 		log.SetOutput(LogOutput)
 		log.SetFormatter(&log.TextFormatter{TimestampFormat: "02-01-2006 15:04:05", FullTimestamp: true})
 	} else if config.LogMode != "stdout" {
-		return &bouncerConfig{}, fmt.Errorf("log mode '%s' unknown, expecting 'file' or 'stdout'", config.LogMode)
+		return &BouncerConfig{}, fmt.Errorf("log mode '%s' unknown, expecting 'file' or 'stdout'", config.LogMode)
 	}
 
 	if config.CacheRetentionDuration == 0 {
