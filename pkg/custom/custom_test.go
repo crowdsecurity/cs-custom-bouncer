@@ -1,4 +1,4 @@
-package custom
+package custom_test
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/crowdsecurity/crowdsec/pkg/models"
+
+	"github.com/crowdsecurity/cs-custom-bouncer/pkg/custom"
 )
 
 const (
@@ -159,8 +161,8 @@ func Test_CustomBouncer_Add(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			defer cleanup()
-			c := &CustomBouncer{
-				path: binaryPath,
+			c := &custom.CustomBouncer{
+				Path: binaryPath,
 			}
 			c.ResetCache()
 			for _, decision := range tt.args.Decisions {
@@ -272,8 +274,8 @@ func Test_CustomBouncer_Delete(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			defer cleanup()
-			c := &CustomBouncer{
-				path: binaryPath,
+			c := &custom.CustomBouncer{
+				Path: binaryPath,
 			}
 			c.ResetCache()
 			for _, decision := range tt.args.Decisions {

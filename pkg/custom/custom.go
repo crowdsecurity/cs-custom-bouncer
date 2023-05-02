@@ -27,7 +27,7 @@ type DecisionWithAction struct {
 }
 
 type CustomBouncer struct {
-	path                    string
+	Path                    string
 	BinaryStdin             io.Writer
 	feedViaStdin            bool
 	newDecisionValueSet     map[DecisionKey]struct{}
@@ -36,7 +36,7 @@ type CustomBouncer struct {
 
 func NewCustomBouncer(cfg *cfg.BouncerConfig) (*CustomBouncer, error) {
 	return &CustomBouncer{
-		path:         cfg.BinPath,
+		Path:         cfg.BinPath,
 		feedViaStdin: cfg.FeedViaStdin,
 	}, nil
 }
@@ -64,7 +64,7 @@ func (c *CustomBouncer) Add(decision *models.Decision) error {
 	if err != nil {
 		return err
 	}
-	log.Debugf("custom [%s] : add ban on %s for %s sec (%s)", c.path, *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario)
+	log.Debugf("custom [%s] : add ban on %s for %s sec (%s)", c.Path, *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario)
 	var str string
 	if c.feedViaStdin {
 		str, err = serializeDecision(decision, "add")
@@ -79,7 +79,7 @@ func (c *CustomBouncer) Add(decision *models.Decision) error {
 		c.newDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 		return nil
 	}
-	cmd := exec.Command(c.path, "add", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
+	cmd := exec.Command(c.Path, "add", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		log.Errorf("Error in 'add' command (%s): %v --> %s", cmd.String(), err, string(out))
 	}
@@ -109,8 +109,8 @@ func (c *CustomBouncer) Delete(decision *models.Decision) error {
 	if err != nil {
 		log.Warningf("serialize: %s", err)
 	}
-	log.Debugf("custom [%s] : del ban on %s for %s sec (%s)", c.path, *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario)
-	cmd := exec.Command(c.path, "del", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
+	log.Debugf("custom [%s] : del ban on %s for %s sec (%s)", c.Path, *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario)
+	cmd := exec.Command(c.Path, "del", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		log.Errorf("Error in 'del' command (%s): %v --> %s", cmd.String(), err, string(out))
 	}
