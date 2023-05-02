@@ -7,10 +7,8 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"gopkg.in/yaml.v2"
 
-	"github.com/crowdsecurity/crowdsec/pkg/types"
 	"github.com/crowdsecurity/crowdsec/pkg/yamlpatch"
 )
 
@@ -29,13 +27,7 @@ type BouncerConfig struct {
 	ExcludeScenariosContaining []string         `yaml:"exclude_scenarios_containing"`
 	OnlyIncludeDecisionsFrom   []string         `yaml:"only_include_decisions_from"`
 	Daemon                     bool             `yaml:"daemonize"`
-	LogMode                    string           `yaml:"log_mode"`
-	LogDir                     string           `yaml:"log_dir"`
-	LogLevel                   log.Level        `yaml:"log_level"`
-	LogMaxSize                 int              `yaml:"log_max_size,omitempty"`
-	LogMaxFiles                int              `yaml:"log_max_files,omitempty"`
-	LogMaxAge                  int              `yaml:"log_max_age,omitempty"`
-	CompressLogs               *bool            `yaml:"compress_logs,omitempty"`
+	Logging                    LoggingConfig    `yaml:",inline"`
 	APIUrl                     string           `yaml:"api_url"`
 	APIKey                     string           `yaml:"api_key"`
 	CacheRetentionDuration     time.Duration    `yaml:"cache_retention_duration"`
@@ -55,8 +47,6 @@ func MergedConfig(configPath string) ([]byte, error) {
 }
 
 func NewConfig(reader io.Reader) (*BouncerConfig, error) {
-	var LogOutput *lumberjack.Logger //io.Writer
-
 	config := &BouncerConfig{}
 
 	fcontent, err := io.ReadAll(reader)
@@ -69,53 +59,17 @@ func NewConfig(reader io.Reader) (*BouncerConfig, error) {
 		return &BouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
+	if err := config.Logging.setup("crowdsec-custom-bouncer.log"); err != nil {
+		return &BouncerConfig{}, err
+	}
+
 	if config.BinPath == "" {
 		return &BouncerConfig{}, fmt.Errorf("bin_path is not set")
-	}
-	if config.LogMode == "" {
-		return &BouncerConfig{}, fmt.Errorf("log_mode is not net")
 	}
 
 	_, err = os.Stat(config.BinPath)
 	if os.IsNotExist(err) {
-		return config, fmt.Errorf("binary '%s' doesn't exist", config.BinPath)
-	}
-
-	/*Configure logging*/
-	if err := types.SetDefaultLoggerConfig(config.LogMode, config.LogDir, config.LogLevel, config.LogMaxSize, config.LogMaxFiles, config.LogMaxAge, config.CompressLogs, false); err != nil {
-		log.Fatal(err)
-	}
-	if config.LogMode == "file" {
-		if config.LogDir == "" {
-			config.LogDir = "/var/log/"
-		}
-		_maxsize := 500
-		if config.LogMaxSize != 0 {
-			_maxsize = config.LogMaxSize
-		}
-		_maxfiles := 3
-		if config.LogMaxFiles != 0 {
-			_maxfiles = config.LogMaxFiles
-		}
-		_maxage := 30
-		if config.LogMaxAge != 0 {
-			_maxage = config.LogMaxAge
-		}
-		_compress := true
-		if config.CompressLogs != nil {
-			_compress = *config.CompressLogs
-		}
-		LogOutput = &lumberjack.Logger{
-			Filename:   config.LogDir + "/crowdsec-custom-bouncer.log",
-			MaxSize:    _maxsize, //megabytes
-			MaxBackups: _maxfiles,
-			MaxAge:     _maxage,   //days
-			Compress:   _compress, //disabled by default
-		}
-		log.SetOutput(LogOutput)
-		log.SetFormatter(&log.TextFormatter{TimestampFormat: "02-01-2006 15:04:05", FullTimestamp: true})
-	} else if config.LogMode != "stdout" {
-		return &BouncerConfig{}, fmt.Errorf("log mode '%s' unknown, expecting 'file' or 'stdout'", config.LogMode)
+		return &BouncerConfig{}, fmt.Errorf("binary '%s' doesn't exist", config.BinPath)
 	}
 
 	if config.CacheRetentionDuration == 0 {
