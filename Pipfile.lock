@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "69c86d695356c20f431ec1938556a270052281054bea00cd025f6d77ee6b89fe"
+            "sha256": "17632ac38178eedd21ca2407639c8264ff3e0ebbbb308602e5ed84bd18bca257"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.10"
+            "python_version": "*"
         },
         "sources": [
             {
@@ -201,11 +201,19 @@
         },
         "docker": {
             "hashes": [
-                "sha256:5ec18b9c49d48ee145a5b5824bb126dc32fc77931e18444783fc07a7724badc0",
-                "sha256:8308b23d3d0982c74f7aa0a3abd774898c0c4fba006e9c3bde4f68354e470fe2"
+                "sha256:134cd828f84543cbf8e594ff81ca90c38288df3c0a559794c12f2e4b634ea19e",
+                "sha256:dcc088adc2ec4e7cfc594e275d8bd2c9738c56c808de97476939ef67db5af8c2"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==6.1.1"
+            "version": "==6.1.2"
+        },
+        "exceptiongroup": {
+            "hashes": [
+                "sha256:232c37c63e4f682982c8b6459f33a8981039e5fb8756b2074364e5055c498c9e",
+                "sha256:d484c3090ba2889ae2928419117447a14daf3c1231d5e30d0aae34f354f01785"
+            ],
+            "index": "pypi",
+            "version": "==1.1.1"
         },
         "idna": {
             "hashes": [
@@ -291,7 +299,7 @@
         },
         "pytest-cs": {
             "git": "https://github.com/crowdsecurity/pytest-cs.git",
-            "ref": "4bf6f42da3332104b709709202de81eb86d0f025"
+            "ref": "e146c11a6024f5156e590f25483d822badea6bb3"
         },
         "pytest-datadir": {
             "hashes": [
@@ -563,7 +571,7 @@
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
                 "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==1.16.0"
         },
         "stack-data": {

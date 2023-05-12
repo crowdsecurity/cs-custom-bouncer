@@ -17,7 +17,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
-	"github.com/sirupsen/logrus/hooks/writer"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/crowdsecurity/crowdsec/pkg/models"
@@ -113,14 +112,6 @@ func main() {
 	if configPath == nil || *configPath == "" {
 		log.Fatalf("configuration file is required")
 	}
-
-	log.AddHook(&writer.Hook{ // Send logs with level fatal to stderr
-		Writer: os.Stderr,
-		LogLevels: []log.Level{
-			log.PanicLevel,
-			log.FatalLevel,
-		},
-	})
 
 	configBytes, err := cfg.MergedConfig(*configPath)
 	if err != nil {
