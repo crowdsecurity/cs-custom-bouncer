@@ -31,36 +31,29 @@ const (
 	name = "crowdsec-custom-bouncer"
 )
 
-func termHandler(sig os.Signal, custom *custom.CustomBouncer) error {
+func bouncerShutdown(custom *custom.CustomBouncer) {
+	log.Info("shutting down custom-bouncer service")
 	if err := custom.ShutDown(); err != nil {
-		return err
+		log.Errorf("while shutting down custom-bouncer service: %s", err)
 	}
-	return nil
 }
 
-func HandleSignals(custom *custom.CustomBouncer) {
+func HandleSignals(ctx context.Context) error {
 	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan,
-		syscall.SIGTERM, syscall.SIGINT)
+	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT)
 
-	exitChan := make(chan int)
-	go func() {
-		for {
-			s := <-signalChan
-			switch s {
-			// kill -SIGTERM XXXX
-			case syscall.SIGTERM, syscall.SIGINT:
-				if err := termHandler(s, custom); err != nil {
-					log.Fatalf("shutdown fail: %s", err)
-				}
-				exitChan <- 0
-			}
+	select {
+	case s := <-signalChan:
+		switch s {
+		case syscall.SIGTERM:
+			return fmt.Errorf("received SIGTERM")
+		case syscall.SIGINT:
+			return fmt.Errorf("received SIGINT")
 		}
-	}()
-
-	code := <-exitChan
-	log.Infof("Shutting down custom-bouncer service")
-	os.Exit(code)
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+	return nil
 }
 
 func deleteDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
@@ -145,6 +138,8 @@ func Execute() error {
 	if err = custom.Init(); err != nil {
 		return err
 	}
+
+	defer bouncerShutdown(custom)
 
 	bouncer := &csbouncer.StreamBouncer{}
 	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.VersionStr())
@@ -249,7 +244,9 @@ func Execute() error {
 		if !sent && err != nil {
 			log.Errorf("Failed to notify: %v", err)
 		}
-		go HandleSignals(custom)
+		g.Go(func() error {
+			return HandleSignals(ctx)
+		})
 	}
 
 	if err := g.Wait(); err != nil {
