@@ -86,6 +86,36 @@ func addDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
 	}
 }
 
+func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg.BouncerConfig) error {
+	f := func() error {
+		log.Debugf("Starting binary %s %s", config.BinPath, config.BinArgs)
+		c := exec.CommandContext(ctx, config.BinPath, config.BinArgs...)
+		s, err := c.StdinPipe()
+		if err != nil {
+			return err
+		}
+		custom.BinaryStdin = s
+		if err := c.Start(); err != nil {
+			return err
+		}
+
+		return c.Wait()
+	}
+	var err error
+	if config.TotalRetries == -1 {
+		for {
+			err = f()
+			log.Errorf("Binary exited: %s", err)
+		}
+	} else {
+		for i := 1; i <= config.TotalRetries; i++ {
+			err = f()
+			log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
+		}
+	}
+	return fmt.Errorf("maximum retries exceeded for binary. Exiting")
+}
+
 func Execute() error {
 	var err error
 	var promServer *http.Server
@@ -182,35 +212,10 @@ func Execute() error {
 			// don't need to cancel context here, prometheus is not critical
 		}()
 	}
+
 	if config.FeedViaStdin {
 		g.Go(func() error {
-			f := func() error {
-				log.Debugf("Starting binary %s %s", config.BinPath, config.BinArgs)
-				c := exec.CommandContext(ctx, config.BinPath, config.BinArgs...)
-				s, err := c.StdinPipe()
-				if err != nil {
-					return err
-				}
-				custom.BinaryStdin = s
-				if err := c.Start(); err != nil {
-					return err
-				}
-
-				return c.Wait()
-			}
-			var err error
-			if config.TotalRetries == -1 {
-				for {
-					err = f()
-					log.Errorf("Binary exited: %s", err)
-				}
-			} else {
-				for i := 1; i <= config.TotalRetries; i++ {
-					err = f()
-					log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
-				}
-			}
-			return fmt.Errorf("maximum retries exceeded for binary. Exiting")
+			return feedViaStdin(ctx, custom, config)
 		})
 	}
 
