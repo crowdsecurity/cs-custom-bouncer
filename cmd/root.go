@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bytes"
@@ -93,7 +93,7 @@ func addDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
 	}
 }
 
-func main() {
+func Execute() error {
 	var err error
 	var promServer *http.Server
 	configPath := flag.String("c", "", "path to crowdsec-custom-bouncer.yaml")
@@ -106,26 +106,26 @@ func main() {
 
 	if *bouncerVersion {
 		fmt.Print(version.ShowStr())
-		os.Exit(0)
+		return nil
 	}
 
 	if configPath == nil || *configPath == "" {
-		log.Fatalf("configuration file is required")
+		return fmt.Errorf("configuration file is required")
 	}
 
 	configBytes, err := cfg.MergedConfig(*configPath)
 	if err != nil {
-		log.Fatalf("unable to read config file: %s", err)
+		return fmt.Errorf("unable to read config file: %w", err)
 	}
 
 	if *showConfig {
 		fmt.Println(string(configBytes))
-		return
+		return nil
 	}
 
 	config, err := cfg.NewConfig(bytes.NewReader(configBytes))
 	if err != nil {
-		log.Fatalf("unable to load configuration: %s", err)
+		return fmt.Errorf("unable to load configuration: %w", err)
 	}
 
 	if *verbose {
@@ -134,16 +134,16 @@ func main() {
 
 	custom, err := custom.NewCustomBouncer(config)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if *testConfig {
 		log.Info("config is valid")
-		os.Exit(0)
+		return nil
 	}
 
-	if err := custom.Init(); err != nil {
-		log.Fatal(err)
+	if err = custom.Init(); err != nil {
+		return err
 	}
 
 	bouncer := &csbouncer.StreamBouncer{}
@@ -151,11 +151,11 @@ func main() {
 
 	err = bouncer.ConfigReader(bytes.NewReader(configBytes))
 	if err != nil {
-		log.Fatalf("unable to configure bouncer: %s", err)
+		return fmt.Errorf("unable to configure bouncer: %w", err)
 	}
 
 	if err := bouncer.Init(); err != nil {
-		log.Fatal(err)
+		return err
 	}
 	cacheResetTicker := time.NewTicker(config.CacheRetentionDuration)
 
@@ -206,7 +206,7 @@ func main() {
 			var err error
 			if config.TotalRetries == -1 {
 				for {
-					err := f()
+					err = f()
 					log.Errorf("Binary exited: %s", err)
 				}
 			} else {
@@ -253,6 +253,8 @@ func main() {
 	}
 
 	if err := g.Wait(); err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("process terminated with error: %w", err)
 	}
+
+	return nil
 }
