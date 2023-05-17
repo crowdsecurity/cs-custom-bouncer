@@ -188,7 +188,7 @@ func Execute() error {
 
 	g.Go(func() error {
 		bouncer.Run(ctx)
-		return fmt.Errorf("stream init failed")
+		return fmt.Errorf("bouncer stream halted")
 	})
 
 	if config.PrometheusConfig.Enabled {
