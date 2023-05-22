@@ -19,12 +19,12 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/crowdsecurity/go-cs-lib/pkg/version"
 	"github.com/crowdsecurity/crowdsec/pkg/models"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
 
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/cfg"
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/custom"
-	"github.com/crowdsecurity/cs-custom-bouncer/pkg/version"
 )
 
 const (
@@ -128,7 +128,7 @@ func Execute() error {
 	flag.Parse()
 
 	if *bouncerVersion {
-		fmt.Print(version.ShowStr())
+		fmt.Print(version.FullString())
 		return nil
 	}
 
@@ -172,7 +172,7 @@ func Execute() error {
 	defer bouncerShutdown(custom)
 
 	bouncer := &csbouncer.StreamBouncer{}
-	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.VersionStr())
+	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.String())
 
 	err = bouncer.ConfigReader(bytes.NewReader(configBytes))
 	if err != nil {
