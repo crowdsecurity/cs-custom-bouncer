@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "17632ac38178eedd21ca2407639c8264ff3e0ebbbb308602e5ed84bd18bca257"
+            "sha256": "72a63e455cc5dbbeb2d9e4d38acb8c6b389de9f3851042ccd0c50f4f1e18719e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -299,7 +299,7 @@
         },
         "pytest-cs": {
             "git": "https://github.com/crowdsecurity/pytest-cs.git",
-            "ref": "e146c11a6024f5156e590f25483d822badea6bb3"
+            "ref": "4a3451084215053af8a48ff37507b4f86bf75c10"
         },
         "pytest-datadir": {
             "hashes": [
@@ -571,7 +571,7 @@
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
                 "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.16.0"
         },
         "stack-data": {

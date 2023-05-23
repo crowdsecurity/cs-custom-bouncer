@@ -18,5 +18,5 @@ def test_yaml_local(bouncer, cb_stream_cfg_factory):
         cb.wait_for_lines_fnmatch([
             "*connection refused*",
             "*terminating bouncer process*",
-            "*stream init failed*",
+            "*bouncer stream halted*",
         ])
