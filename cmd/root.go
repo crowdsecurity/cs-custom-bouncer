@@ -19,9 +19,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/crowdsecurity/go-cs-lib/pkg/version"
 	"github.com/crowdsecurity/crowdsec/pkg/models"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
+	"github.com/crowdsecurity/go-cs-lib/pkg/version"
 
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/cfg"
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/custom"
