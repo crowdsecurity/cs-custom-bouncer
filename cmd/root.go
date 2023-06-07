@@ -160,6 +160,8 @@ func Execute() error {
 		return err
 	}
 
+	log.Infof("%s %s", name, version.String())
+
 	if *testConfig {
 		log.Info("config is valid")
 		return nil
