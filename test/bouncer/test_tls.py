@@ -73,12 +73,27 @@ def test_tls_mutual(crowdsec, certs_dir, api_key_factory, bouncer, cb_stream_cfg
         port = cs.probe.get_bound_port('8080')
         cfg = cb_stream_cfg_factory()
         cfg['api_url'] = f'https://localhost:{port}'
-        cfg['cert_path'] = (certs / 'bouncer.crt').as_posix()
-        cfg['key_path'] = (certs / 'bouncer.key').as_posix()
         cfg['ca_cert_path'] = (certs / 'ca.crt').as_posix()
+
+        cfg['cert_path'] = (certs / 'agent.crt').as_posix()
+        cfg['key_path'] = (certs / 'agent.key').as_posix()
 
         with bouncer(cfg) as cb:
             cb.wait_for_lines_fnmatch([
+                "*Starting crowdsec-custom-bouncer*",
+                "*Using CA cert*",
+                "*Using cert auth with cert * and key *",
+                "*API error: access forbidden*",
+            ])
+
+        cfg['cert_path'] = (certs / 'bouncer.crt').as_posix()
+        cfg['key_path'] = (certs / 'bouncer.key').as_posix()
+
+        with bouncer(cfg) as cb:
+            cb.wait_for_lines_fnmatch([
+                "*Starting crowdsec-custom-bouncer*",
+                "*Using CA cert*",
+                "*Using cert auth with cert * and key *",
                 "*Processing new and deleted decisions . . .*",
                 "*deleting 0 decisions*",
                 "*adding 0 decisions*",
