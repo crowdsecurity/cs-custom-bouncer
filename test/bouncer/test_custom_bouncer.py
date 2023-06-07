@@ -195,7 +195,8 @@ def test_add_decisions(bouncer_with_lapi):
 
         for i, line in enumerate(lines, start=1):
             line = json.loads(line)
-            del line['duration']
+            line.pop('duration', None)
+            line.pop('uuid', None)
             assert line == {
                 'action': 'add',
                 'id': i,
