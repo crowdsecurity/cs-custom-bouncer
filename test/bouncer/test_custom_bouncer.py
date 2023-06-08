@@ -9,7 +9,7 @@ def test_no_custom_binary(crowdsec, bouncer, cb_cfg_factory):
         cb.wait_for_lines_fnmatch([
             "*unable to load configuration: binary '/does/not/exist' doesn't exist*",
         ])
-        cb.proc.wait(timeout=0.2)
+        cb.proc.wait()
         assert not cb.proc.is_running()
 
 
@@ -19,7 +19,7 @@ def test_no_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
         cb.wait_for_lines_fnmatch([
             "*unable to configure bouncer: config does not contain LAPI key or certificate*",
         ])
-        cb.proc.wait(timeout=0.2)
+        cb.proc.wait()
         assert not cb.proc.is_running()
 
     cfg['api_key'] = ''
@@ -28,7 +28,7 @@ def test_no_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
         cb.wait_for_lines_fnmatch([
             "*unable to configure bouncer: config does not contain LAPI key or certificate*",
         ])
-        cb.proc.wait(timeout=0.2)
+        cb.proc.wait()
         assert not cb.proc.is_running()
 
 
@@ -58,7 +58,7 @@ def test_bad_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
                 "*auth-api: auth with api key failed return nil response, error*",
                 "*process terminated with error: bouncer stream halted*",
             ])
-            cb.proc.wait(timeout=1)
+            cb.proc.wait()
             assert not cb.proc.is_running()
 
 
@@ -166,7 +166,7 @@ def test_binary_monitor(bouncer_with_lapi):
         # This will exceed max_retry and the bouncer will stop
         assert cb.proc.is_running()
         cb.halt_children()
-        cb.proc.wait(timeout=0.5)
+        cb.proc.wait()
         assert not cb.proc.is_running()
         cb.wait_for_lines_fnmatch([
             "*Binary exited (retry 3/3): signal: killed*",
