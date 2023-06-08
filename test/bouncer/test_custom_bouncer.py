@@ -227,7 +227,7 @@ def test_bin_args(bouncer_with_lapi, tmp_path_factory):
             res = lapi.cont.exec_run(f'cscli decisions add -i 1.2.3.{i}')
             assert res.exit_code == 0
 
-        time.sleep(1)
+        time.sleep(2)
 
         with open(data) as f:
             lines = f.readlines()
