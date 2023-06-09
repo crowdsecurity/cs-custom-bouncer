@@ -62,7 +62,7 @@ def test_bad_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
             assert not cb.proc.is_running()
 
 
-def test_good_api_key(crowdsec, bouncer, cb_stream_cfg_factory, api_key_factory):
+def test_good_api_key(crowdsec, bouncer, cb_stream_cfg_factory, api_key_factory, bouncer_under_test):
     api_key = api_key_factory()
     env = {
         'BOUNCER_KEY_custom': api_key,
@@ -89,6 +89,8 @@ def test_good_api_key(crowdsec, bouncer, cb_stream_cfg_factory, api_key_factory)
             bouncers = json.loads(res.output)
             assert len(bouncers) == 1
             assert bouncers[0]['name'] == 'custom'
+            assert bouncers[0]['auth_type'] == 'api-key'
+            assert bouncers[0]['type'] == bouncer_under_test
 
             # check that the bouncer can successfully connect
             # and receive decisions
