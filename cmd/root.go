@@ -162,13 +162,13 @@ func Execute() error {
 
 	log.Infof("Starting %s %s", name, version.String())
 
+	if err = custom.Init(); err != nil {
+		return err
+	}
+
 	if *testConfig {
 		log.Info("config is valid")
 		return nil
-	}
-
-	if err = custom.Init(); err != nil {
-		return err
 	}
 
 	defer bouncerShutdown(custom)
