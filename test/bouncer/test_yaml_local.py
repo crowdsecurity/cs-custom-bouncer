@@ -4,7 +4,7 @@ def test_yaml_local(bouncer, cb_stream_cfg_factory):
 
     with bouncer(cfg) as cb:
         cb.wait_for_lines_fnmatch([
-            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+            "*config does not contain LAPI key or certificate*",
         ])
         cb.proc.wait(timeout=0.2)
         assert not cb.proc.is_running()
