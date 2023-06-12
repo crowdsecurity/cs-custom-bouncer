@@ -17,7 +17,7 @@ def test_no_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
     cfg = cb_stream_cfg_factory()
     with bouncer(cfg) as cb:
         cb.wait_for_lines_fnmatch([
-            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+            "*config does not contain LAPI key or certificate*",
         ])
         cb.proc.wait()
         assert not cb.proc.is_running()
@@ -26,7 +26,7 @@ def test_no_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
 
     with bouncer(cfg) as cb:
         cb.wait_for_lines_fnmatch([
-            "*unable to configure bouncer: config does not contain LAPI key or certificate*",
+            "*config does not contain LAPI key or certificate*",
         ])
         cb.proc.wait()
         assert not cb.proc.is_running()
