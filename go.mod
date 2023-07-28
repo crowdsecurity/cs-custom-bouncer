@@ -4,11 +4,11 @@ go 1.20
 
 require (
 	github.com/coreos/go-systemd/v22 v22.5.0
-	github.com/crowdsecurity/crowdsec v1.5.3-rc1
-	github.com/crowdsecurity/go-cs-bouncer v0.0.7
-	github.com/crowdsecurity/go-cs-lib v0.0.2
+	github.com/crowdsecurity/crowdsec v1.5.3-rc2.0.20230728143508-ffadd4277969
+	github.com/crowdsecurity/go-cs-bouncer v0.0.8-0.20230728143631-8e012f484d8f
+	github.com/crowdsecurity/go-cs-lib v0.0.3
 	github.com/prometheus/client_golang v1.15.1
-	github.com/sirupsen/logrus v1.9.2
+	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/sync v0.2.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v2 v2.4.0
