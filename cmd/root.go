@@ -27,9 +27,7 @@ import (
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/custom"
 )
 
-const (
-	name = "crowdsec-custom-bouncer"
-)
+const name = "crowdsec-custom-bouncer"
 
 func bouncerShutdown(custom *custom.CustomBouncer) {
 	log.Info("shutting down custom-bouncer service")
@@ -117,7 +115,6 @@ func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg
 }
 
 func Execute() error {
-	var err error
 	var promServer *http.Server
 	configPath := flag.String("c", "", "path to crowdsec-custom-bouncer.yaml")
 	verbose := flag.Bool("v", false, "set verbose mode")

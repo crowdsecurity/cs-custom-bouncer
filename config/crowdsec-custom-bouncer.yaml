@@ -1,9 +1,13 @@
 bin_path: ${BINARY_PATH}
 bin_args: []
-feed_via_stdin: false # Invokes binary once and feeds incoming decisions to it's stdin.
-total_retries: 0 # number of times to restart binary. relevant if feed_via_stdin=true . Set to -1 for infinite retries.
-scenarios_containing: [] # ignore IPs banned for triggering scenarios not containing either of provided word, eg ["ssh", "http"]
-scenarios_not_containing: [] # ignore IPs banned for triggering scenarios containing either of provided word
+# Invokes binary once and feeds incoming decisions to its stdin.
+feed_via_stdin: false
+# Number of times to restart the binary. relevant if feed_via_stdin=true. Set to -1 for infinite retries.
+total_retries: 0
+# Ignore IPs that are banned for triggering scenarios that do not contain any of the provided words, eg ["ssh", "http"]
+scenarios_containing: []
+# Ignore IPs that are banned for triggering scenarios that contain any of the provided words
+scenarios_not_containing: []
 origins: []
 piddir: /var/run/
 update_frequency: 10s
