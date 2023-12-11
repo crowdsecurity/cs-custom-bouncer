@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/coreos/go-systemd/v22 v22.5.0
 	github.com/crowdsecurity/crowdsec v1.5.5
-	github.com/crowdsecurity/go-cs-bouncer v0.0.12
+	github.com/crowdsecurity/go-cs-bouncer v0.0.13
 	github.com/crowdsecurity/go-cs-lib v0.0.5
 	github.com/prometheus/client_golang v1.17.0
 	github.com/sirupsen/logrus v1.9.3
