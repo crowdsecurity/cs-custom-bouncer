@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -59,12 +60,12 @@ func NewConfig(reader io.Reader) (*BouncerConfig, error) {
 		return &BouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
-	if err := config.Logging.setup("crowdsec-custom-bouncer.log"); err != nil {
+	if err = config.Logging.setup("crowdsec-custom-bouncer.log"); err != nil {
 		return &BouncerConfig{}, err
 	}
 
 	if config.BinPath == "" {
-		return &BouncerConfig{}, fmt.Errorf("bin_path is not set")
+		return &BouncerConfig{}, errors.New("bin_path is not set")
 	}
 
 	_, err = os.Stat(config.BinPath)

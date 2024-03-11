@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net"
@@ -45,9 +46,9 @@ func HandleSignals(ctx context.Context) error {
 	case s := <-signalChan:
 		switch s {
 		case syscall.SIGTERM:
-			return fmt.Errorf("received SIGTERM")
+			return errors.New("received SIGTERM")
 		case os.Interrupt: // cross-platform SIGINT
-			return fmt.Errorf("received interrupt")
+			return errors.New("received interrupt")
 		}
 	case <-ctx.Done():
 		return ctx.Err()
@@ -112,7 +113,7 @@ func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg
 			log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
 		}
 	}
-	return fmt.Errorf("maximum retries exceeded for binary. Exiting")
+	return errors.New("maximum retries exceeded for binary. Exiting")
 }
 
 func Execute() error {
@@ -131,7 +132,7 @@ func Execute() error {
 	}
 
 	if configPath == nil || *configPath == "" {
-		return fmt.Errorf("configuration file is required")
+		return errors.New("configuration file is required")
 	}
 
 	configMerged, err := cfg.MergedConfig(*configPath)
@@ -190,7 +191,7 @@ func Execute() error {
 
 	g.Go(func() error {
 		bouncer.Run(ctx)
-		return fmt.Errorf("bouncer stream halted")
+		return errors.New("bouncer stream halted")
 	})
 
 	if config.PrometheusConfig.Enabled {
