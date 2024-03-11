@@ -9,7 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 
-	"github.com/crowdsecurity/go-cs-lib/csstring"
 	"github.com/crowdsecurity/go-cs-lib/yamlpatch"
 )
 
@@ -55,9 +54,7 @@ func NewConfig(reader io.Reader) (*BouncerConfig, error) {
 		return &BouncerConfig{}, err
 	}
 
-	configBuff := csstring.StrictExpand(string(fcontent), os.LookupEnv)
-
-	err = yaml.Unmarshal([]byte(configBuff), &config)
+	err = yaml.Unmarshal(fcontent, &config)
 	if err != nil {
 		return &BouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
 	}

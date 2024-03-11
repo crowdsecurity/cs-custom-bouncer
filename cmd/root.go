@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bytes"
 	"context"
 	"flag"
 	"fmt"
@@ -10,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -21,6 +21,7 @@ import (
 
 	"github.com/crowdsecurity/crowdsec/pkg/models"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
+	"github.com/crowdsecurity/go-cs-lib/csstring"
 	"github.com/crowdsecurity/go-cs-lib/version"
 
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/cfg"
@@ -133,17 +134,19 @@ func Execute() error {
 		return fmt.Errorf("configuration file is required")
 	}
 
-	configBytes, err := cfg.MergedConfig(*configPath)
+	configMerged, err := cfg.MergedConfig(*configPath)
 	if err != nil {
 		return fmt.Errorf("unable to read config file: %w", err)
 	}
 
 	if *showConfig {
-		fmt.Println(string(configBytes))
+		fmt.Println(string(configMerged))
 		return nil
 	}
 
-	config, err := cfg.NewConfig(bytes.NewReader(configBytes))
+	configExpanded := csstring.StrictExpand(string(configMerged), os.LookupEnv)
+
+	config, err := cfg.NewConfig(strings.NewReader(configExpanded))
 	if err != nil {
 		return fmt.Errorf("unable to load configuration: %w", err)
 	}
@@ -173,7 +176,7 @@ func Execute() error {
 	bouncer := &csbouncer.StreamBouncer{}
 	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.String())
 
-	err = bouncer.ConfigReader(bytes.NewReader(configBytes))
+	err = bouncer.ConfigReader(strings.NewReader(configExpanded))
 	if err != nil {
 		return fmt.Errorf("unable to configure bouncer: %w", err)
 	}
