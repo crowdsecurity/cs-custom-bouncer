@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,7 +10,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 
-	"github.com/crowdsecurity/go-cs-lib/csstring"
 	"github.com/crowdsecurity/go-cs-lib/yamlpatch"
 )
 
@@ -55,19 +55,17 @@ func NewConfig(reader io.Reader) (*BouncerConfig, error) {
 		return &BouncerConfig{}, err
 	}
 
-	configBuff := csstring.StrictExpand(string(fcontent), os.LookupEnv)
-
-	err = yaml.Unmarshal([]byte(configBuff), &config)
+	err = yaml.Unmarshal(fcontent, &config)
 	if err != nil {
 		return &BouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
-	if err := config.Logging.setup("crowdsec-custom-bouncer.log"); err != nil {
+	if err = config.Logging.setup("crowdsec-custom-bouncer.log"); err != nil {
 		return &BouncerConfig{}, err
 	}
 
 	if config.BinPath == "" {
-		return &BouncerConfig{}, fmt.Errorf("bin_path is not set")
+		return &BouncerConfig{}, errors.New("bin_path is not set")
 	}
 
 	_, err = os.Stat(config.BinPath)

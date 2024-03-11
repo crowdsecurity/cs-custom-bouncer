@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"bytes"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net"
@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 
 	"github.com/crowdsecurity/crowdsec/pkg/models"
 	csbouncer "github.com/crowdsecurity/go-cs-bouncer"
+	"github.com/crowdsecurity/go-cs-lib/csstring"
 	"github.com/crowdsecurity/go-cs-lib/version"
 
 	"github.com/crowdsecurity/cs-custom-bouncer/pkg/cfg"
@@ -44,9 +46,9 @@ func HandleSignals(ctx context.Context) error {
 	case s := <-signalChan:
 		switch s {
 		case syscall.SIGTERM:
-			return fmt.Errorf("received SIGTERM")
+			return errors.New("received SIGTERM")
 		case os.Interrupt: // cross-platform SIGINT
-			return fmt.Errorf("received interrupt")
+			return errors.New("received interrupt")
 		}
 	case <-ctx.Done():
 		return ctx.Err()
@@ -111,7 +113,7 @@ func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg
 			log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
 		}
 	}
-	return fmt.Errorf("maximum retries exceeded for binary. Exiting")
+	return errors.New("maximum retries exceeded for binary. Exiting")
 }
 
 func Execute() error {
@@ -130,20 +132,22 @@ func Execute() error {
 	}
 
 	if configPath == nil || *configPath == "" {
-		return fmt.Errorf("configuration file is required")
+		return errors.New("configuration file is required")
 	}
 
-	configBytes, err := cfg.MergedConfig(*configPath)
+	configMerged, err := cfg.MergedConfig(*configPath)
 	if err != nil {
 		return fmt.Errorf("unable to read config file: %w", err)
 	}
 
 	if *showConfig {
-		fmt.Println(string(configBytes))
+		fmt.Println(string(configMerged))
 		return nil
 	}
 
-	config, err := cfg.NewConfig(bytes.NewReader(configBytes))
+	configExpanded := csstring.StrictExpand(string(configMerged), os.LookupEnv)
+
+	config, err := cfg.NewConfig(strings.NewReader(configExpanded))
 	if err != nil {
 		return fmt.Errorf("unable to load configuration: %w", err)
 	}
@@ -173,7 +177,7 @@ func Execute() error {
 	bouncer := &csbouncer.StreamBouncer{}
 	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.String())
 
-	err = bouncer.ConfigReader(bytes.NewReader(configBytes))
+	err = bouncer.ConfigReader(strings.NewReader(configExpanded))
 	if err != nil {
 		return fmt.Errorf("unable to configure bouncer: %w", err)
 	}
@@ -187,7 +191,7 @@ func Execute() error {
 
 	g.Go(func() error {
 		bouncer.Run(ctx)
-		return fmt.Errorf("bouncer stream halted")
+		return errors.New("bouncer stream halted")
 	})
 
 	if config.PrometheusConfig.Enabled {
