@@ -108,7 +108,8 @@ func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg
 			log.Errorf("Binary exited: %s", err)
 		}
 	} else {
-		for i := 1; i <= config.TotalRetries; i++ {
+		// i needs to start at 0 so we at least try once to start the process if config.TotalRetires is not set
+		for i := 0; i <= config.TotalRetries; i++ {
 			err = f()
 			log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
 		}
