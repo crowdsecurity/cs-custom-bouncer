@@ -175,7 +175,6 @@ func Test_CustomBouncer_Add(t *testing.T) {
 			if !reflect.DeepEqual(foundData, tt.expectedLines) {
 				t.Errorf("expected=%v, found=%v", tt.expectedLines, foundData)
 			}
-
 		})
 	}
 }
@@ -288,7 +287,6 @@ func Test_CustomBouncer_Delete(t *testing.T) {
 			if !reflect.DeepEqual(foundData, tt.expectedLines) {
 				t.Errorf("expected=%v, found=%v", tt.expectedLines, foundData)
 			}
-
 		})
 	}
 }
