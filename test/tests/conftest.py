@@ -83,7 +83,7 @@ def cb_stream_cfg_factory(cb_cfg_factory):
     def closure(**kw):
         cfg = {
             "feed_via_stdin": True,
-            "bin_path": "test/custom-stream",
+            "bin_path": "custom-stream",
         }
         cfg |= cb_cfg_factory(**kw)
         return cfg
