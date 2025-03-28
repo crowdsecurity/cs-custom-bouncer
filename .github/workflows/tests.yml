@@ -17,14 +17,14 @@ jobs:
     steps:
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version: 1.21.7
+        go-version-file: go.mod
 
     - name: Build
       run: |
@@ -38,21 +38,25 @@ jobs:
       env:
         RICHGO_FORCE_COLOR: 1
 
-    - name: Cache virtualenvs
-      id: cache-pipenv
-      uses: actions/cache@v3
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
       with:
-        path: ~/.local/share/virtualenvs
-        key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+        version: 0.5.24
+        enable-cache: true
+        cache-dependency-glob: "test/uv.lock"
+
+    - name: "Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: "test/.python-version"
+
+    - name: Install the project
+      working-directory: ./test
+      run: uv sync --all-extras --dev
 
     - name: Install functional test dependencies
       run: |
         docker network create net-test
-        python3 -m pip install --upgrade pipenv wheel
-        pipenv install --deploy
-        # some tests need root, so we have to install pytest twice
-        sudo python3 -m pip install --upgrade pipenv wheel
-        sudo pipenv install --deploy
 
     - name: Run functional tests
       env:
@@ -61,13 +65,14 @@ jobs:
         CROWDSEC_TEST_NETWORK: net-test
         CROWDSEC_TEST_TIMEOUT: 60
         PYTEST_ADDOPTS: --durations=0 -vv --color=yes -m "not (deb or rpm)"
+      working-directory: ./test
       run: |
         # everything except for
         # - install (requires root, ignored by default)
         # - deb/rpm (on their own workflows)
-        pipenv run pytest
+        uv run pytest
         # these need root
-        sudo -E pipenv run pytest ./test/install/no_crowdsec
+        sudo -E $(which uv) run pytest ./tests/install/no_crowdsec
         # these need a running crowdsec
         docker run -d --name crowdsec -e CI_TESTING=true -e DISABLE_ONLINE_API=true -p 8080:8080 -ti crowdsecurity/crowdsec
         install -m 0755 /dev/stdin /usr/local/bin/cscli <<'EOT'
@@ -75,4 +80,11 @@ jobs:
         docker exec crowdsec cscli "$@"
         EOT
         sleep 5
-        sudo -E pipenv run pytest ./test/install/with_crowdsec
+        sudo -E $(which uv) run pytest ./tests/install/with_crowdsec
+
+    - name: Lint
+      working-directory: ./test
+      run: |
+        uv run ruff check
+        uv run basedpyright
+
