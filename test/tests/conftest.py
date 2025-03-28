@@ -1,10 +1,11 @@
 import contextlib
 
 import pytest
-
 from pytest_cs import plugin
 
-pytest_exception_interact = plugin.pytest_exception_interact
+# XXX:
+# fails with "Argument(s) {'_call'} are declared in the hookimpl but can not be found in the hookspec"
+# pytest_exception_interact = plugin.pytest_exception_interact
 
 
 # provide the name of the bouncer binary to test
