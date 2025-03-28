@@ -40,7 +40,7 @@ func parseFile(path string) []parsedLine {
 		panic(err)
 	}
 	for _, line := range strings.Split(string(dat), "\n") {
-		if len(line) == 0 {
+		if line == "" {
 			continue
 		}
 

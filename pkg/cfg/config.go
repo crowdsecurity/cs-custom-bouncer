@@ -52,29 +52,29 @@ func NewConfig(reader io.Reader) (*BouncerConfig, error) {
 
 	fcontent, err := io.ReadAll(reader)
 	if err != nil {
-		return &BouncerConfig{}, err
+		return nil, err
 	}
 
 	err = yaml.Unmarshal(fcontent, &config)
 	if err != nil {
-		return &BouncerConfig{}, fmt.Errorf("failed to unmarshal: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
 	if err = config.Logging.setup("crowdsec-custom-bouncer.log"); err != nil {
-		return &BouncerConfig{}, err
+		return nil, err
 	}
 
 	if config.BinPath == "" {
-		return &BouncerConfig{}, errors.New("bin_path is not set")
+		return nil, errors.New("bin_path is not set")
 	}
 
 	_, err = os.Stat(config.BinPath)
 	if os.IsNotExist(err) {
-		return &BouncerConfig{}, fmt.Errorf("binary '%s' doesn't exist", config.BinPath)
+		return nil, fmt.Errorf("binary '%s' doesn't exist", config.BinPath)
 	}
 
 	if config.CacheRetentionDuration == 0 {
-		log.Infof("cache_retention_duration defaults to 10 seconds")
+		log.Info("cache_retention_duration defaults to 10 seconds")
 		config.CacheRetentionDuration = 10 * time.Second
 	}
 

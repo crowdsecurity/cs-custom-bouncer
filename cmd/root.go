@@ -59,7 +59,7 @@ func HandleSignals(ctx context.Context) error {
 
 func deleteDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
 	if len(decisions) == 1 {
-		log.Infof("deleting 1 decision")
+		log.Info("deleting 1 decision")
 	} else {
 		log.Infof("deleting %d decisions", len(decisions))
 	}
@@ -236,13 +236,13 @@ func Execute() error {
 	}
 
 	g.Go(func() error {
-		log.Infof("Processing new and deleted decisions . . .")
+		log.Info("Processing new and deleted decisions . . .")
 		for {
 			select {
 			case <-ctx.Done():
-				log.Infoln("terminating bouncer process")
+				log.Info("terminating bouncer process")
 				if config.PrometheusConfig.Enabled {
-					log.Infoln("terminating prometheus server")
+					log.Info("terminating prometheus server")
 					if err := promServer.Shutdown(context.Background()); err != nil {
 						log.Errorf("unable to shutdown prometheus server: %s", err)
 					}

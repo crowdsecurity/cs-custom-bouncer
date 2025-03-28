@@ -1,5 +1,10 @@
 version: "2"
 
+  gocritic:
+    enable-all: true
+    disabled-checks:
+      - sloppyReassign
+
 linters:
   default: all
   disable:
