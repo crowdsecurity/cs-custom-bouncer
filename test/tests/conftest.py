@@ -17,7 +17,14 @@ def bouncer_under_test():
 # Create a lapi container, register a bouncer and run it with the updated config.
 # - Return context manager that yields a tuple of (bouncer, lapi)
 @pytest.fixture(scope="session")
-def bouncer_with_lapi(bouncer, crowdsec, cb_stream_cfg_factory, api_key_factory, tmp_path_factory, bouncer_binary):
+def bouncer_with_lapi(
+    bouncer,
+    crowdsec,
+    cb_stream_cfg_factory,
+    api_key_factory: plugin.ApiKeyFactoryType,
+    tmp_path_factory,
+    bouncer_binary,
+):
     @contextlib.contextmanager
     def closure(config_lapi=None, config_bouncer=None, api_key=None):
         if config_bouncer is None:

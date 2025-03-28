@@ -1,5 +1,6 @@
 import os
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -16,10 +17,10 @@ def test_deb_install_purge(deb_package_path, bouncer_under_test, must_be_root):
     assert deb_package_path.exists(), f"This test requires {deb_package_path}"
 
     bouncer_exe = f"/usr/bin/{bouncer_under_test}"
-    assert not os.path.exists(bouncer_exe)
+    assert not Path(bouncer_exe).exists()
 
     config = f"/etc/crowdsec/bouncers/{bouncer_under_test}.yaml"
-    assert not os.path.exists(config)
+    assert not Path(config).exists()
 
     # install the package
     p = subprocess.run(
@@ -30,7 +31,7 @@ def test_deb_install_purge(deb_package_path, bouncer_under_test, must_be_root):
     )
     assert p.returncode == 0, f"Failed to install {deb_package_path}"
 
-    assert os.path.exists(bouncer_exe)
+    assert Path(bouncer_exe).exists()
     assert os.stat(bouncer_exe).st_mode & 0o777 == 0o755
 
     assert os.path.exists(config)

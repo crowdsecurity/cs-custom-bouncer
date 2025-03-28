@@ -1,5 +1,6 @@
 import json
 import time
+from pathlib import Path
 
 
 def test_no_custom_binary(crowdsec, bouncer, cb_cfg_factory):
@@ -212,15 +213,15 @@ def test_add_decisions(bouncer_with_lapi):
 
         time.sleep(1)
 
-        with open(data) as f:
+        with Path(data).open() as f:
             lines = f.readlines()
         assert len(lines) == 5
 
         for i, line in enumerate(lines, start=1):
-            line = json.loads(line)
-            line.pop("duration", None)
-            line.pop("uuid", None)
-            assert line == {
+            j = json.loads(line)
+            j.pop("duration", None)
+            j.pop("uuid", None)
+            assert j == {
                 "action": "add",
                 "id": i,
                 "origin": "cscli",
@@ -252,7 +253,7 @@ def test_bin_args(bouncer_with_lapi, tmp_path_factory):
 
         time.sleep(2)
 
-        with open(data) as f:
+        with Path(data).open() as f:
             lines = f.readlines()
         assert len(lines) == 5
 
@@ -274,7 +275,7 @@ def test_cache_retention(bouncer_with_lapi):
             res = lapi.cont.exec_run(f"cscli decisions add -i 1.2.3.{i}")
             assert res.exit_code == 0
         time.sleep(1)
-        with open(data) as f:
+        with Path(data).open() as f:
             lines = f.readlines()
         assert len(lines) == 2
 
@@ -297,14 +298,14 @@ def test_delete_decisions(bouncer_with_lapi):
             res = lapi.cont.exec_run(f"cscli decisions delete --ip 1.2.3.{i}")
             assert res.exit_code == 0
         time.sleep(1)
-        with open(data) as f:
+        with Path(data).open() as f:
             lines = f.readlines()
         assert len(lines) == 10
         current_decisions = set()
         for line in lines:
-            line = json.loads(line)
-            if line["action"] == "add":
-                current_decisions.add(line["id"])
-            elif line["action"] == "del":
-                current_decisions.remove(line["id"])
+            j = json.loads(line)
+            if j["action"] == "add":
+                current_decisions.add(j["id"])
+            elif j["action"] == "del":
+                current_decisions.remove(j["id"])
         assert len(current_decisions) == 0

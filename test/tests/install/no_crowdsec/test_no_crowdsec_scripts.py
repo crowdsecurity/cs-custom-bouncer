@@ -1,19 +1,20 @@
 import os
-import pexpect
-import yaml
+from pathlib import Path
 
+import pexpect
 import pytest
+import yaml
 
 BOUNCER = "crowdsec-custom-bouncer"
 CONFIG = f"/etc/crowdsec/bouncers/{BOUNCER}.yaml"
 
 
-@pytest.mark.dependency()
+@pytest.mark.dependency
 def test_install_no_crowdsec(project_repo, bouncer_binary, must_be_root):
     c = pexpect.spawn("/usr/bin/sh", ["scripts/install.sh"], cwd=project_repo)
 
     c.expect("Path to your custom binary:")
-    c.sendline("/tmp/foo")
+    c.sendline("/path/to/binary")
     c.expect(f"Installing {BOUNCER}")
     c.expect("WARN.* cscli not found, you will need to generate an api key.")
     c.expect(f"WARN.* service not started. You need to get an API key and configure it in {CONFIG}")
@@ -22,10 +23,10 @@ def test_install_no_crowdsec(project_repo, bouncer_binary, must_be_root):
     assert c.terminated
     assert c.exitstatus == 0
 
-    with open(CONFIG) as f:
+    with Path(CONFIG).open() as f:
         y = yaml.safe_load(f)
         assert y["api_key"] == "<API_KEY>"
-        assert y["bin_path"] == "/tmp/foo"
+        assert y["bin_path"] == "/path/to/binary"
 
     assert os.path.exists(CONFIG)
     assert os.stat(CONFIG).st_mode & 0o777 == 0o600

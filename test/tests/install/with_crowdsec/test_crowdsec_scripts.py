@@ -1,8 +1,9 @@
 import os
-import pexpect
-import yaml
+from pathlib import Path
 
+import pexpect
 import pytest
+import yaml
 from pytest_cs.lib import cscli, text
 
 BOUNCER = "crowdsec-custom-bouncer"
@@ -10,7 +11,7 @@ CONFIG = f"/etc/crowdsec/bouncers/{BOUNCER}.yaml"
 
 
 @pytest.mark.systemd_debug(BOUNCER)
-@pytest.mark.dependency()
+@pytest.mark.dependency
 def test_install_crowdsec(project_repo, bouncer_binary, tmp_path, must_be_root):
     c = pexpect.spawn("/usr/bin/sh", ["scripts/install.sh"], encoding="utf-8", cwd=project_repo)
 
@@ -36,13 +37,13 @@ def test_install_crowdsec(project_repo, bouncer_binary, tmp_path, must_be_root):
     assert os.stat(f"/usr/local/bin/{BOUNCER}").st_mode & 0o777 == 0o755
 
     # configuration check
-    with open(CONFIG) as f:
+    with Path(CONFIG).open() as f:
         y = yaml.safe_load(f)
         assert y["api_key"] == api_key
         assert y["bin_path"] == foo.as_posix()
 
     # the bouncer is registered
-    with open(f"{CONFIG}.id") as f:
+    with Path(f"{CONFIG}.id").open() as f:
         bouncer_name = f.read().strip()
 
     assert len(list(cscli.get_bouncers(name=bouncer_name))) == 1
@@ -70,7 +71,7 @@ def test_upgrade_crowdsec(project_repo, must_be_root):
 @pytest.mark.dependency(depends=["test_upgrade_crowdsec"])
 def test_uninstall_crowdsec(project_repo, must_be_root):
     # the bouncer is registered
-    with open(f"{CONFIG}.id") as f:
+    with Path(f"{CONFIG}.id").open() as f:
         bouncer_name = f.read().strip()
 
     c = pexpect.spawn("/usr/bin/sh", ["scripts/uninstall.sh"], encoding="utf-8", cwd=project_repo)

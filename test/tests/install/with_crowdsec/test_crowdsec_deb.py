@@ -1,9 +1,9 @@
 import os
 import subprocess
-import yaml
 from pathlib import Path
 
 import pytest
+import yaml
 from zxcvbn import zxcvbn
 
 pytestmark = pytest.mark.deb
@@ -47,13 +47,13 @@ def test_deb_install_purge(deb_package_path, bouncer_under_test, must_be_root):
     assert os.path.exists(config)
     assert os.stat(config).st_mode & 0o777 == 0o600
 
-    with open(config) as f:
+    with Path(config).open() as f:
         cfg = yaml.safe_load(f)
         api_key = cfg["api_key"]
         # the api key has been set to a random value
         assert zxcvbn(api_key)["score"] == 4, f"weak api_key: '{api_key}'"
 
-    with open(config + ".id") as f:
+    with Path(config + ".id").open() as f:
         bouncer_name = f.read().strip()
 
     p = subprocess.check_output(["cscli", "bouncers", "list", "-o", "json"])
@@ -78,7 +78,6 @@ def test_deb_install_purge_yaml_local(deb_package_path, bouncer_under_test, must
 
     => the configuration files are not touched (no new api key)
     """
-
     assert deb_package_path.exists(), f"This test requires {deb_package_path}"
 
     p = subprocess.check_output(["dpkg-deb", "-f", deb_package_path.as_posix(), "Package"], encoding="utf-8")
@@ -93,7 +92,7 @@ def test_deb_install_purge_yaml_local(deb_package_path, bouncer_under_test, must
 
     subprocess.check_call(["cscli", "bouncers", "add", "testbouncer", "-k", "123456"])
 
-    with open(config.with_suffix(".yaml.local"), "w") as f:
+    with config.with_suffix(".yaml.local").open("w") as f:
         f.write('api_key: "123456"')
 
     p = subprocess.run(
@@ -107,7 +106,7 @@ def test_deb_install_purge_yaml_local(deb_package_path, bouncer_under_test, must
     assert os.path.exists(bouncer_exe)
     assert os.path.exists(config)
 
-    with open(config) as f:
+    with Path(config).open() as f:
         cfg = yaml.safe_load(f)
         api_key = cfg["api_key"]
         # the api key has not been set
