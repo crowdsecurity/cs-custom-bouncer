@@ -123,5 +123,3 @@ release: clean tarball
 .PHONY: platform-all
 platform-all: clean
 	python3 .github/release.py run-build $(BINARY_NAME)
-
-include mk/goversion.mk
