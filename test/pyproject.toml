@@ -23,10 +23,10 @@ dev = [
     "ruff>=0.11.2",
 ]
 
-#[tool.ruff]
-#
-#line-length = 120
-#
+[tool.ruff]
+
+line-length = 120
+
 #[tool.ruff.lint]
 #select = [
 #  "ALL"
