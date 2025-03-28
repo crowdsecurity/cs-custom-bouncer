@@ -8,6 +8,8 @@ github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 h1:DklsrG3d
 github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
+github.com/blackfireio/osinfo v1.0.5 h1:6hlaWzfcpb87gRmznVf7wSdhysGqLRz9V/xuSdCEXrA=
+github.com/blackfireio/osinfo v1.0.5/go.mod h1:Pd987poVNmd5Wsx6PRPw4+w7kLlf9iJxoRKPtPAjOrA=
 github.com/cespare/xxhash/v2 v2.2.0 h1:DC2CZ1Ep5Y4k3ZQ899DldepgrayRUGE6BBZ/cd9Cj44=
 github.com/cespare/xxhash/v2 v2.2.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
@@ -17,8 +19,8 @@ github.com/crowdsecurity/crowdsec v1.5.5 h1:wzA0uvxZSAfvU6Q9mT7eGzkfMiIfVRZXG/Dt
 github.com/crowdsecurity/crowdsec v1.5.5/go.mod h1:ozniSsSWu3EZIzmqS5hAftFBheH84dIdkqQqKKYGfZk=
 github.com/crowdsecurity/go-cs-bouncer v0.0.13 h1:BndYyRr7NtATbrbU9ju43kfIESfkdsq2wmIptxkyzB0=
 github.com/crowdsecurity/go-cs-bouncer v0.0.13/go.mod h1:CQrs7Al1ORcdDtY/sMv/ps1LjxFDCiM2Kvlamn3uJx0=
-github.com/crowdsecurity/go-cs-lib v0.0.5 h1:eVLW+BRj3ZYn0xt5/xmgzfbbB8EBo32gM4+WpQQk2e8=
-github.com/crowdsecurity/go-cs-lib v0.0.5/go.mod h1:8FMKNGsh3hMZi2SEv6P15PURhEJnZV431XjzzBSuf0k=
+github.com/crowdsecurity/go-cs-lib v0.0.16 h1:2/htodjwc/sfsv4deX8F/2Fzg1bOI8w3O1/BPSvvsB0=
+github.com/crowdsecurity/go-cs-lib v0.0.16/go.mod h1:XwGcvTt4lMq4Tm1IRMSKMDf0CVrnytTU8Uoofa7AR+g=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
