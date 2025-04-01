@@ -103,10 +103,6 @@ func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg
 		return c.Wait()
 	}
 
-	if config.TotalRetries == 0 {
-		config.TotalRetries = 1
-	}
-
 	attempt := 1
 	delay := 0 * time.Second
 

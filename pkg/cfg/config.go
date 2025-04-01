@@ -78,5 +78,9 @@ func NewConfig(reader io.Reader) (*BouncerConfig, error) {
 		config.CacheRetentionDuration = 10 * time.Second
 	}
 
+	if config.TotalRetries == 0 {
+		config.TotalRetries = 1
+	}
+
 	return config, nil
 }
