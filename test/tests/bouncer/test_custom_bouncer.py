@@ -169,20 +169,22 @@ def test_binary_monitor(bouncer_with_lapi):
 
         # Let's kill custom-stream and see if it's restarted max_retry times (2)
         cb.halt_children()
+        time.sleep(2)
         cb.wait_for_child(timeout=2)
         assert len(cb.children()) == 1
         cb.wait_for_lines_fnmatch(
             [
-                "*Binary exited (retry 1/3): signal: killed*",
+                "*custom program exited (retry 1/3): signal: killed*",
             ]
         )
 
         cb.halt_children()
+        time.sleep(2)
         cb.wait_for_child(timeout=2)
         assert len(cb.children()) == 1
         cb.wait_for_lines_fnmatch(
             [
-                "*Binary exited (retry 2/3): signal: killed*",
+                "*custom program exited (retry 2/3): signal: killed*",
             ]
         )
 
@@ -192,7 +194,7 @@ def test_binary_monitor(bouncer_with_lapi):
         cb.proc.wait()
         assert not cb.proc.is_running()
         cb.wait_for_lines_fnmatch(
-            ["*Binary exited (retry 3/3): signal: killed*", "*maximum retries exceeded for binary. Exiting*"]
+            ["*custom program exited (retry 3/3): signal: killed*", "*maximum retries exceeded for program execution*"]
         )
 
 
