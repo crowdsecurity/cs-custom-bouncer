@@ -20,7 +20,7 @@ log_compression: true
 log_max_size: 100
 log_max_backups: 3
 log_max_age: 30
-api_url: http://localhost:8080/
+api_url: ${CROWDSEC_LAPI_URL}
 api_key: ${API_KEY}
 
 prometheus:

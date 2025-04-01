@@ -74,7 +74,7 @@ func deleteDecisions(custom *custom.CustomBouncer, decisions []*models.Decision)
 
 func addDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
 	if len(decisions) == 1 {
-		log.Infof("adding 1 decision")
+		log.Info("adding 1 decision")
 	} else {
 		log.Infof("adding %d decisions", len(decisions))
 	}
@@ -102,19 +102,30 @@ func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg
 
 		return c.Wait()
 	}
-	var err error
-	if config.TotalRetries == -1 {
-		for {
-			err = f()
-			log.Errorf("Binary exited: %s", err)
+
+	attempt := 1
+	delay := 0 * time.Second
+
+	for config.TotalRetries == -1 || attempt <= config.TotalRetries {
+		time.Sleep(delay)
+		err := f()
+		switch {
+		case err == nil:
+			log.Warningf("custom program exited with no error (retry %d/%d) -- the command is not supposed to quit when using stdin", attempt, config.TotalRetries)
+		case errors.Is(err, context.Canceled):
+			log.Info("custom program terminated")
+			return nil
+		case config.TotalRetries == 1:
+			log.Errorf("custom program exited: %s", err)
+		default:
+			log.Errorf("custom program exited (retry %d/%d): %s", attempt, config.TotalRetries, err)
 		}
-	} else {
-		for i := 1; i <= config.TotalRetries; i++ {
-			err = f()
-			log.Errorf("Binary exited (retry %d/%d): %s", i, config.TotalRetries, err)
-		}
+
+		delay = 2 * time.Second
+		attempt++
 	}
-	return errors.New("maximum retries exceeded for binary. Exiting")
+
+	return errors.New("maximum retries exceeded for program execution")
 }
 
 func Execute() error {
@@ -164,7 +175,7 @@ func Execute() error {
 
 	log.Infof("Starting %s %s", name, version.String())
 
-	if err = custom.Init(); err != nil {
+	if err := custom.Init(); err != nil {
 		return err
 	}
 
@@ -178,8 +189,7 @@ func Execute() error {
 	bouncer := &csbouncer.StreamBouncer{}
 	bouncer.UserAgent = fmt.Sprintf("%s/%s", name, version.String())
 
-	err = bouncer.ConfigReader(strings.NewReader(configExpanded))
-	if err != nil {
+	if err := bouncer.ConfigReader(strings.NewReader(configExpanded)); err != nil {
 		return fmt.Errorf("unable to configure bouncer: %w", err)
 	}
 
@@ -212,7 +222,9 @@ func Execute() error {
 		prometheus.MustRegister(csbouncer.TotalLAPICalls, csbouncer.TotalLAPIError)
 		go func() {
 			log.Infof("Serving metrics at %s", listenOn+"/metrics")
-			log.Error(promServer.ListenAndServe())
+			if err := promServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				log.Error(err)
+			}
 			// don't need to cancel context here, prometheus is not critical
 		}()
 	}
@@ -235,7 +247,7 @@ func Execute() error {
 						log.Errorf("unable to shutdown prometheus server: %s", err)
 					}
 				}
-				return nil
+				return ctx.Err()
 			case decisions := <-bouncer.Stream:
 				if decisions == nil {
 					continue
