@@ -115,14 +115,14 @@ func feedViaStdin(ctx context.Context, custom *custom.CustomBouncer, config *cfg
 		err := f()
 		switch {
 		case err == nil:
-			log.Warning("custom program exited with no error -- the command is not supposed to quit when using stdin")
+			log.Warningf("custom program exited with no error (retry %d/%d) -- the command is not supposed to quit when using stdin", attempt, config.TotalRetries)
 		case errors.Is(err, context.Canceled):
 			log.Info("custom program terminated")
 			return nil
 		case config.TotalRetries == 1:
-			log.Errorf("custom program exited: %s", err.Error())
+			log.Errorf("custom program exited: %s", err)
 		default:
-			log.Errorf("custom program exited (retry %d/%d): %s", attempt, config.TotalRetries, err.Error())
+			log.Errorf("custom program exited (retry %d/%d): %s", attempt, config.TotalRetries, err)
 		}
 
 		delay = 2 * time.Second
