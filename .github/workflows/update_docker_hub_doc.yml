@@ -3,7 +3,7 @@ name: (push-master) Update Docker Hub README
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'docker/README.md'
 
