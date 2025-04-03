@@ -34,7 +34,7 @@ type parsedLine struct {
 }
 
 func parseFile(path string) []parsedLine {
-	dat, err := os.ReadFile(binaryOutputFile)
+	dat, err := os.ReadFile(path)
 	parsedLines := make([]parsedLine, 0)
 	if err != nil {
 		panic(err)

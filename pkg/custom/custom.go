@@ -118,7 +118,7 @@ func (c *CustomBouncer) Delete(decision *models.Decision) error {
 	return nil
 }
 
-func (c *CustomBouncer) ShutDown() error {
+func (*CustomBouncer) ShutDown() error {
 	return nil
 }
 
