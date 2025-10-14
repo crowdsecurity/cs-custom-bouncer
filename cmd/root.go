@@ -57,14 +57,14 @@ func HandleSignals(ctx context.Context) error {
 	return nil
 }
 
-func deleteDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
+func deleteDecisions(ctx context.Context, custom *custom.CustomBouncer, decisions []*models.Decision) {
 	if len(decisions) == 1 {
 		log.Info("deleting 1 decision")
 	} else {
 		log.Infof("deleting %d decisions", len(decisions))
 	}
 	for _, d := range decisions {
-		if err := custom.Delete(d); err != nil {
+		if err := custom.Delete(ctx, d); err != nil {
 			log.Errorf("unable to delete decision for '%s': %s", *d.Value, err)
 			continue
 		}
@@ -72,14 +72,14 @@ func deleteDecisions(custom *custom.CustomBouncer, decisions []*models.Decision)
 	}
 }
 
-func addDecisions(custom *custom.CustomBouncer, decisions []*models.Decision) {
+func addDecisions(ctx context.Context, custom *custom.CustomBouncer, decisions []*models.Decision) {
 	if len(decisions) == 1 {
 		log.Info("adding 1 decision")
 	} else {
 		log.Infof("adding %d decisions", len(decisions))
 	}
 	for _, d := range decisions {
-		if err := custom.Add(d); err != nil {
+		if err := custom.Add(ctx, d); err != nil {
 			log.Errorf("unable to insert decision for '%s': %s", *d.Value, err)
 			continue
 		}
@@ -252,8 +252,8 @@ func Execute() error {
 				if decisions == nil {
 					continue
 				}
-				deleteDecisions(custom, decisions.Deleted)
-				addDecisions(custom, decisions.New)
+				deleteDecisions(ctx, custom, decisions.Deleted)
+				addDecisions(ctx, custom, decisions.New)
 			case <-cacheResetTicker.C:
 				custom.ResetCache()
 			}

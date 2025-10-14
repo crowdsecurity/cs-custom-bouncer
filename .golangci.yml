@@ -1,10 +1,5 @@
 version: "2"
 
-  gocritic:
-    enable-all: true
-    disabled-checks:
-      - sloppyReassign
-
 linters:
   default: all
   disable:
@@ -29,6 +24,10 @@ linters:
     - whitespace
     - wrapcheck
     - wsl
+    - embeddedstructfieldcheck
+    - noinlineerr
+    - wsl_v5
+
   settings:
 
     depguard:
@@ -37,6 +36,13 @@ linters:
           deny:
             - pkg: github.com/pkg/errors
               desc: errors.Wrap() is deprecated in favor of fmt.Errorf()
+
+    gocritic:
+      enable-all: true
+      disabled-checks:
+        - importShadow
+        - sloppyReassign
+
     govet:
       disable:
         - fieldalignment

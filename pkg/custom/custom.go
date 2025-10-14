@@ -1,6 +1,7 @@
 package custom
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -56,7 +57,7 @@ func (c *CustomBouncer) Init() error {
 	return nil
 }
 
-func (c *CustomBouncer) Add(decision *models.Decision) error {
+func (c *CustomBouncer) Add(ctx context.Context, decision *models.Decision) error {
 	if _, exists := c.newDecisionValueSet[decisionToDecisionKey(decision)]; exists {
 		return nil
 	}
@@ -79,7 +80,7 @@ func (c *CustomBouncer) Add(decision *models.Decision) error {
 		c.newDecisionValueSet[decisionToDecisionKey(decision)] = struct{}{}
 		return nil
 	}
-	cmd := exec.Command(c.Path, "add", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
+	cmd := exec.CommandContext(ctx, c.Path, "add", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		log.Errorf("Error in 'add' command (%s): %v --> %s", cmd.String(), err, string(out))
 	}
@@ -87,7 +88,7 @@ func (c *CustomBouncer) Add(decision *models.Decision) error {
 	return nil
 }
 
-func (c *CustomBouncer) Delete(decision *models.Decision) error {
+func (c *CustomBouncer) Delete(ctx context.Context, decision *models.Decision) error {
 	if _, exists := c.expiredDecisionValueSet[decisionToDecisionKey(decision)]; exists {
 		return nil
 	}
@@ -110,7 +111,7 @@ func (c *CustomBouncer) Delete(decision *models.Decision) error {
 		log.Warningf("serialize: %s", err)
 	}
 	log.Debugf("custom [%s] : del ban on %s for %s sec (%s)", c.Path, *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario)
-	cmd := exec.Command(c.Path, "del", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
+	cmd := exec.CommandContext(ctx, c.Path, "del", *decision.Value, strconv.Itoa(int(banDuration.Seconds())), *decision.Scenario, str)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		log.Errorf("Error in 'del' command (%s): %v --> %s", cmd.String(), err, string(out))
 	}

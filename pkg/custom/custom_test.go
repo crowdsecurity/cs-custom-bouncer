@@ -68,6 +68,8 @@ func cleanup() {
 }
 
 func Test_CustomBouncer_Add(t *testing.T) {
+	ctx := t.Context()
+
 	type args struct {
 		Decisions []*models.Decision
 	}
@@ -166,7 +168,7 @@ func Test_CustomBouncer_Add(t *testing.T) {
 			}
 			c.ResetCache()
 			for _, decision := range tt.args.Decisions {
-				err := c.Add(decision)
+				err := c.Add(ctx, decision)
 				if err != nil {
 					t.Error(err)
 				}
@@ -180,6 +182,8 @@ func Test_CustomBouncer_Add(t *testing.T) {
 }
 
 func Test_CustomBouncer_Delete(t *testing.T) {
+	ctx := t.Context()
+
 	type args struct {
 		Decisions []*models.Decision
 	}
@@ -278,7 +282,7 @@ func Test_CustomBouncer_Delete(t *testing.T) {
 			}
 			c.ResetCache()
 			for _, decision := range tt.args.Decisions {
-				err := c.Delete(decision)
+				err := c.Delete(ctx, decision)
 				if err != nil {
 					t.Error(err)
 				}
