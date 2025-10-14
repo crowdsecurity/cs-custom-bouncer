@@ -15,8 +15,8 @@ def test_yaml_local(bouncer, cb_stream_cfg_factory):
     with bouncer(cfg, config_local=config_local) as cb:
         cb.wait_for_lines_fnmatch(
             [
-                "*connection refused*",
-                "*terminating bouncer process*",
-                "*bouncer stream halted*",
+                "*custom program terminated*",
+                "*shutting down custom-bouncer service*",
+                "*process terminated with error*",
             ]
         )
