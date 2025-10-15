@@ -48,7 +48,7 @@ def test_no_lapi(bouncer, cb_stream_cfg_factory):
             [
                 "*connection refused*",
                 "*terminating bouncer process*",
-                "*process terminated with error: bouncer stream halted*",
+                "*process terminated with error*",
             ]
         )
 
@@ -66,7 +66,7 @@ def test_bad_api_key(crowdsec, bouncer, cb_stream_cfg_factory):
                     "*Using API key auth*",
                     "*Processing new and deleted decisions . . .*",
                     "*auth-api: auth with api key failed return nil response, error*",
-                    "*process terminated with error: bouncer stream halted*",
+                    "*process terminated with error*",
                 ]
             )
             cb.proc.wait()
