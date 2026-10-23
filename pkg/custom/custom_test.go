@@ -39,7 +39,7 @@ func parseFile(path string) []parsedLine {
 	if err != nil {
 		panic(err)
 	}
-	for _, line := range strings.Split(string(dat), "\n") {
+	for line := range strings.SplitSeq(string(dat), "\n") {
 		if line == "" {
 			continue
 		}

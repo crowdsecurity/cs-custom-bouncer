@@ -1,6 +1,6 @@
 module github.com/crowdsecurity/cs-custom-bouncer
 
-go 1.25.2
+go 1.27.3
 
 require (
 	github.com/coreos/go-systemd/v22 v22.5.0

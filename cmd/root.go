@@ -136,7 +136,7 @@ func Execute() error {
 	testConfig := flag.Bool("t", false, "test config and exit")
 	showConfig := flag.Bool("T", false, "show full config (.yaml + .yaml.local) and exit")
 
-	flag.Parse()
+	flag.Parse() //nolint:revive // Execute() is the program entrypoint, called from main()
 
 	if *bouncerVersion {
 		fmt.Print(version.FullString())
