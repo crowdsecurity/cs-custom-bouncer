@@ -32,6 +32,8 @@ import (
 
 const name = "crowdsec-custom-bouncer"
 
+var errSignalShutdown = errors.New("signal shutdown")
+
 func bouncerShutdown(custom *custom.CustomBouncer) {
 	log.Info("shutting down custom-bouncer service")
 	if err := custom.ShutDown(); err != nil {
@@ -44,17 +46,11 @@ func HandleSignals(ctx context.Context) error {
 	signal.Notify(signalChan, syscall.SIGTERM, os.Interrupt)
 
 	select {
-	case s := <-signalChan:
-		switch s {
-		case syscall.SIGTERM:
-			return errors.New("received SIGTERM")
-		case os.Interrupt: // cross-platform SIGINT
-			return errors.New("received interrupt")
-		}
+	case <-signalChan:
+		return errSignalShutdown
 	case <-ctx.Done():
 		return ctx.Err()
 	}
-	return nil
 }
 
 func deleteDecisions(ctx context.Context, custom *custom.CustomBouncer, decisions []*models.Decision) {
@@ -270,6 +266,11 @@ func Execute() error {
 	}
 
 	if err := g.Wait(); err != nil {
+		if errors.Is(err, errSignalShutdown) {
+			log.Info("Received shutdown signal, exiting gracefully")
+			return nil
+		}
+
 		return fmt.Errorf("process terminated with error: %w", err)
 	}
 

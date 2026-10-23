@@ -22,4 +22,8 @@ if [ "$START" -eq 0 ]; then
     echo "no api key was generated, you can generate one on your LAPI server by running 'cscli bouncers add <bouncer_name>' and add it to '$CONFIG'" >&2
 fi
 
-echo "please enter the binary path in '$CONFIG' and start the bouncer via 'sudo systemctl start $SERVICE'"
+if [ "$START" -eq 1 ] && "$BOUNCER" -c "$CONFIG" -t >/dev/null 2>&1; then
+    systemctl start "$SERVICE" || echo "cannot start service" >&2
+else
+    echo "please enter the binary path in '$CONFIG' and start the bouncer via 'sudo systemctl start $SERVICE'"
+fi
