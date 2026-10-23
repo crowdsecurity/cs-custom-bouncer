@@ -1,4 +1,4 @@
-ARG GOVERSION=1.24
+ARG GOVERSION=1.27
 
 FROM docker.io/golang:${GOVERSION}-alpine AS build
 
